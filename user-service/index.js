@@ -31,7 +31,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/users", userRoutes);
-app.use("/auth", authRoutes);
+app.use("/api/auth", authRoutes);
 
 app.get("/", (req, res, next) => {
   console.log("Sending Greetings!");

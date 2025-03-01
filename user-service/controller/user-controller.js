@@ -15,6 +15,7 @@ import {
 export async function createUser(req, res) {
   try {
     const { username, email, password } = req.body;
+    console.log(req.body)
     if (username && email && password) {
       const existingUser = await _findUserByUsernameOrEmail(username, email);
       if (existingUser) {

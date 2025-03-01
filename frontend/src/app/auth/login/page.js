@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -10,15 +11,14 @@ export default function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
-    });
-    const data = await res.json();
-    if (res.ok) router.push("/dashboard");
-    else alert(data.message);
-  };
+    try {
+        const { data } = await axios.post("http://localhost:3001/api/auth/login", { username, password });
+        console.log(data)
+        router.push("/dashboard");
+      } catch (error) {
+        alert(error.response?.data?.message || "Login failed");
+      }
+    };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -54,4 +54,5 @@ export default function LoginPage() {
       </div>
     </div>
   );
+
 }

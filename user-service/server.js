@@ -16,4 +16,3 @@ await connectToDB().then(() => {
   console.error("Failed to connect to DB");
   console.error(err);
 });
-

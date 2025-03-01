@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 export default function SignupPage() {
   const [username, setUsername] = useState("");
@@ -11,14 +12,12 @@ export default function SignupPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch("/api/auth/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, email, password }),
-    });
-    const data = await res.json();
-    if (res.ok) router.push("/login");
-    else alert(data.message);
+    try {
+      const { data } = await axios.post("http://localhost:3001/api/auth/signup", { username, email, password });
+      router.push("/auth/login");
+    } catch (error) {
+      alert(error.response?.data?.message || "Signup failed");
+    }
   };
 
   return (
