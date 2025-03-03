@@ -3,6 +3,7 @@ import cors from "cors";
 
 import userRoutes from "./routes/user-routes.js";
 import authRoutes from "./routes/auth-routes.js";
+import questionRoutes from "./routes/question-routes.js"
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use((req, res, next) => {
     "Origin, X-Requested-With, Content-Type, Accept, Authorization",
   );
 
+
   // Browsers usually send this before PUT or POST Requests
   if (req.method === "OPTIONS") {
     res.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, PATCH");
@@ -31,7 +33,8 @@ app.use((req, res, next) => {
 });
 
 app.use("/users", userRoutes);
-app.use("/auth", authRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/admin/question", questionRoutes);
 
 app.get("/", (req, res, next) => {
   console.log("Sending Greetings!");
