@@ -7,7 +7,7 @@ const AddQuestionPage = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
-  const [complexity, setComplexity] = useState('easy');
+  const [complexity, setComplexity] = useState('Easy');
   const [message, setMessage] = useState('');
 
   const handleSubmit = async (e) => {
@@ -20,12 +20,12 @@ const AddQuestionPage = () => {
       console.log(response)
         
 
-      if (response.ok) {
+      if (response.status == 201) {
         setMessage('Question added successfully!');
         setTitle('');
         setDescription('');
         setCategory('');
-        setComplexity('easy');
+        setComplexity('Easy');
       } else {
         setMessage('Failed to add question. Please try again.');
       }
@@ -82,9 +82,9 @@ const AddQuestionPage = () => {
             required
             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <option value="easy">Easy</option>
-            <option value="medium">Medium</option>
-            <option value="hard">Hard</option>
+            <option value="Easy">Easy</option>
+            <option value="Medium">Medium</option>
+            <option value="Hard">Hard</option>
           </select>
         </div>
 
@@ -104,3 +104,4 @@ const AddQuestionPage = () => {
 };
 
 export default AddQuestionPage;
+
