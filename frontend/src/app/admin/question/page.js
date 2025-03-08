@@ -16,9 +16,7 @@ const AddQuestionPage = () => {
     const questionData = { title, description, category, complexity };
 
     try {
-      const response = await axios.post("http://localhost:3001/admin/question/add", {questionData});
-      console.log(response)
-        
+      const response = await axios.post("http://localhost:3001/admin/question/add", {questionData});  
 
       if (response.status == 201) {
         setMessage('Question added successfully!');

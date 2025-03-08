@@ -1,7 +1,8 @@
 
 import { isValidObjectId } from "mongoose";
-import { addQuestion as _addQuestion, findQuestionByDescription, findQuestionByTitle } from "../model/question.js";
+import { addQuestion as _addQuestion, findQuestionByDescription, findQuestionById, findQuestionByTitle, updateQuestion } from "../model/question.js";
 import { findAllQuestions as _findAllQuestions } from "../model/question.js";
+import { deleteQuestionById as _deleteQuestionById } from "../model/question.js";
 
 
 export async function addQuestion(req, res) {
@@ -20,7 +21,6 @@ export async function addQuestion(req, res) {
 
         const newQuestion =  await _addQuestion(title, description, category, complexity)
 
-        console.log("Question added")
 
         res.status(201).json({ message: 'Question added successfully!',data : newQuestion });
     } catch (error) {
@@ -39,6 +39,36 @@ export async function findAllQuestions(req,res){
         return res.status(500).json({ message: "Unknown error when getting all questions!" });
       }
 } 
+
+export async function deteleQuestion(req,res){
+    try{
+        const id = req.params.id
+        console.log(id);
+        
+        await _deleteQuestionById(id)
+        
+        return res.status(201).json({message: `Question delete successfull id : ${id}`})
+
+    }catch(err){
+        console.log(err)
+    }
+}
+
+export async function editQuestion(req,res){
+ 
+
+    try {
+        const id =  req.params.id
+        const { title, description, category, complexity } = req.body.editedData;
+
+        const updatedQuestion = await updateQuestion(id,title,description,category,complexity)
+        // console.log(updatedQuestion)
+        res.status(201).json({message:"Question updated successfully", data: (formatQuestionResponse(updatedQuestion))})
+
+    } catch (err) {
+        console.log(err)
+    }
+}
 
 export function formatQuestionResponse(question) {
     return {
