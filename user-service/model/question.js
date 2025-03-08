@@ -24,13 +24,13 @@ export async function findQuestionByComplexity(complexity) {
     return QuestionModel.find({ description });
 }
 
-export async function findQuestionById(questionId) {
-    return QuestionModel.findOne({ questionId });
+export async function findQuestionById(id) {
+    return QuestionModel.findOne({ questionId: id});
 }
 
 export async function updateQuestion(questionId,title, description, category, complexity) {
-    return QuestionModel.findByIdAndUpdate(
-        questionId,
+    return QuestionModel.findOneAndUpdate(
+        {questionId:questionId},
         {
             $set: {
                 title,
@@ -43,6 +43,6 @@ export async function updateQuestion(questionId,title, description, category, co
     );
 }
 
-export async function deleteQuestionById(userId) {
-    return QuestionModel.findByIdAndDelete(userId);
+export async function deleteQuestionById(id) {
+    return QuestionModel.findOneAndDelete({questionId: id});
 }
