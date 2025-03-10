@@ -20,31 +20,31 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-orange-100">
-      <h1 className="text-5xl font-bold text-black mb-2" style={{ fontFamily: "'Fredoka One', cursive" }}>
+    <div className="header-container">
+      <h1 className="header-title">
         PEERPREP
       </h1>
-      <h2 className="text-2xl font-semibold text-black mb-6">Welcome</h2>
+      <h2 className="header-sub-title">Welcome</h2>
 
-      <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
+      <div className="form-container">
         <form onSubmit={handleSubmit} className="space-y-4">
-          <label className="block text-gray-700">Username</label>
+          <label className="form-label">Username</label>
           <input
             type="text"
             placeholder="Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            className="w-full p-3 border rounded-full outline-none focus:ring-2 focus:ring-blue-400 bg-orange-50"
+            className="form-input"
             required
           />
 
-          <label className="block text-gray-700">Your password</label>
+          <label className="form-label">Your password</label>
           <input
             type="password"
             placeholder="Your password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-3 border rounded-full outline-none focus:ring-2 focus:ring-blue-400 bg-orange-50"
+            className="form-input"
             required
           />
 
@@ -56,15 +56,15 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            className="w-full bg-orange-500 text-white font-bold py-3 rounded-full shadow-md hover:bg-orange-600 transition-all"
+            className="button-submit"
           >
             SIGN IN
           </button>
         </form>
 
-        <p className="mt-4 text-center text-gray-700">
+        <p className="footer-msg">
           Don’t have an account?{" "}
-          <a href="/auth/signup" className="text-blue-500 font-semibold hover:underline">
+          <a href="/auth/signup" className="footer-ref">
             Sign Up
           </a>
         </p>

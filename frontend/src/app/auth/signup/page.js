@@ -8,12 +8,17 @@ export default function SignupPage() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (password !== confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
     try {
-      const { data } = await axios.post("http://localhost:3001/api/auth/signup", { username, email, password });
+      await axios.post("http://localhost:3001/api/auth/signup", { username, email, password });
       router.push("/auth/login");
     } catch (error) {
       alert(error.response?.data?.message || "Signup failed");
@@ -21,43 +26,60 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-md p-6 bg-white shadow-md rounded-lg">
-        <h2 className="text-2xl font-semibold text-center mb-4">Sign Up</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="header-container">
+      
+      <h1 className="header-title">
+        PEERPREP
+      </h1>
+      <h2 className="header-sub-title">Create Account</h2>
+
+      <div className="form-container">
+        <form onSubmit={handleSubmit} className="space-y-2">
+          <label className="form-label">Username</label>
           <input
             type="text"
-            placeholder="Username"
+            placeholder="Enter your username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            className="w-full p-2 border rounded"
+            className="form-input"
             required
           />
+          <label className="form-label">Email</label>
           <input
             type="email"
-            placeholder="Email"
+            placeholder="Enter your email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-2 border rounded"
+            className="form-input"
             required
           />
+          <label className="form-label">Password</label>
           <input
             type="password"
-            placeholder="Password"
+            placeholder="Enter password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-2 border rounded"
+            className="form-input"
+            required
+          />
+          <label className="form-label">Confirm Password</label>
+          <input
+            type="password"
+            placeholder="Confirm password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            className="form-input"
             required
           />
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+            className="button-submit mt-4"
           >
-            Sign Up
+            SIGN UP
           </button>
         </form>
-        <p className="mt-4 text-center">
-          Already have an account? <a href="/auth/login" className="text-blue-500">Login</a>
+        <p className="footer-msg">
+          Already a member? <a href="/auth/login" className="footer-ref">Sign In</a>
         </p>
       </div>
     </div>
