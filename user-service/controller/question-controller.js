@@ -54,19 +54,37 @@ export async function deteleQuestion(req,res){
     }
 }
 
-export async function editQuestion(req,res){
+// export async function editQuestion(req,res){
  
 
-    try {
-        const id =  req.params.id
-        const { title, description, category, complexity } = req.body.editedData;
+//     try {
+//         const id =  req.params.id
+//         const { title, description, category, complexity } = req.body.editedData;
 
-        const updatedQuestion = await updateQuestion(id,title,description,category,complexity)
-        // console.log(updatedQuestion)
-        res.status(201).json({message:"Question updated successfully", data: (formatQuestionResponse(updatedQuestion))})
+//         const updatedQuestion = await updateQuestion(id,title,description,category,complexity)
+//         // console.log(updatedQuestion)
+//         res.status(201).json({message:"Question updated successfully", data: (formatQuestionResponse(updatedQuestion))})
+
+//     } catch (err) {
+//         console.log(err)
+//     }
+// }
+
+export async function editQuestion(req, res) {
+    try {
+        const id = req.params.id;
+        const { title, description, category, complexity } = req.body; // Expecting `req.body` directly
+
+        if (!(title && description && category && complexity)) {
+            return res.status(400).json({ message: "All fields are required" });
+        }
+
+        const updatedQuestion = await updateQuestion(id, title, description, category, complexity);
+        res.status(200).json({ message: "Question updated successfully", data: formatQuestionResponse(updatedQuestion) });
 
     } catch (err) {
-        console.log(err)
+        console.error("Error updating question:", err);
+        res.status(500).json({ message: "Failed to update question" });
     }
 }
 
