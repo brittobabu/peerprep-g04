@@ -1,20 +1,23 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { findUserByEmail as _findUserByEmail } from "../model/repository.js";
+import { findUserByUsername as _findUserByUsername } from "../model/repository.js";
 import { formatUserResponse } from "./user-controller.js";
+import { createUser as _createUser } from "./user-controller.js";
+
+//Login
 
 export async function handleLogin(req, res) {
-  const { email, password } = req.body;
-  if (email && password) {
+  const { username, password } = req.body;
+  if (username && password) {
     try {
-      const user = await _findUserByEmail(email);
+      const user = await _findUserByUsername(username);
       if (!user) {
-        return res.status(401).json({ message: "Wrong email and/or password" });
+        return res.status(401).json({ message: "Wrong username and/or password" });
       }
 
       const match = await bcrypt.compare(password, user.password);
       if (!match) {
-        return res.status(401).json({ message: "Wrong email and/or password" });
+        return res.status(401).json({ message: "Wrong username and/or password" });
       }
 
       const accessToken = jwt.sign({
@@ -27,9 +30,10 @@ export async function handleLogin(req, res) {
       return res.status(500).json({ message: err.message });
     }
   } else {
-    return res.status(400).json({ message: "Missing email and/or password" });
+    return res.status(400).json({ message: "Missing username and/or password" });
   }
 }
+
 
 export async function handleVerifyToken(req, res) {
   try {
