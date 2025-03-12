@@ -18,7 +18,7 @@ export default function SignupPage() {
       return;
     }
     try {
-      await axios.post("http://localhost:3001/api/auth/signup", { username, email, password });
+      await axios.post("http://localhost:3001/api/auth/signup", { username, email, password, confirmPassword });
       router.push("/auth/login");
     } catch (error) {
       alert(error.response?.data?.message || "Signup failed");
