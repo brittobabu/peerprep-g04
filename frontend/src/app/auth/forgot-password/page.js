@@ -4,20 +4,16 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
-export default function SignupPage() {
+export default function ForgotPasswordPage() {
   const [userIdentity, setUserIdentity] = useState("");
   const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:3001/api/auth/forgot-password", { userIdentity });
-
-      console.log("API Response:", response.data); // Debugging line
-
-      router.push("/auth/verification");
+      const data=  await axios.post("http://localhost:3001/api/auth/forgot-password",{userIdentity});
+      router.push("/auth/forgot-password/verification");
     } catch (error) {
-      console.log(error);
       alert(error.response?.data?.message || "Failed to send verification code");
     }
   };

@@ -4,16 +4,17 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
-export default function SignupPage() {
+export default function VerificationPage() {
   const [verificationCode, setVerificationCode] = useState("");
   const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:3001/api/auth/forgot-password/verification", { verificationCode });
+      await axios.post("http://localhost:3001/api/auth/forgot-password/verification", {verificationCode});
       router.push("/auth/forgot-password/verification/reset-password");
     } catch (error) {
+      console.log(error);
       alert(error.response?.data?.message || "Failed to verified");
     }
   };
