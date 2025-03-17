@@ -58,7 +58,6 @@ export async function handleSendVerifyCode(req, res) {
 /**verify if code matches*/
 export async function handleVerifyCode(req, res) {
   const { verificationCode } = req.body;
-  console.log(verificationCode);
   if(verificationCode){
     try {
       return res.status(200).json({ message: "Verification code pass", data: { verificationCode } });
@@ -66,7 +65,7 @@ export async function handleVerifyCode(req, res) {
       return res.status(500).json({ message: err.message });
     }
   }else{
-    return res.status(400).json({ message: "Missing username or email" });
+    return res.status(400).json({ message: "Missing Verification code" });
   }
 }
 
