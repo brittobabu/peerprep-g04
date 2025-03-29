@@ -18,8 +18,17 @@ export default function SignupPage() {
       return;
     }
     try {
-      await axios.post("http://localhost:3001/api/auth/signup", { username, email, password });
-      router.push("/auth/login");
+      await axios.post("http://localhost:3001/api/auth/signup", { username, email, password, confirmPassword });
+      
+      // sent otp to email
+      const response = await axios.post("http://localhost:3001/api/auth/sendOTP", {email });
+      console.log("API Response:", response.data); // Debugging line
+
+      router.push(
+        `/auth/signup/verify-account?email=${encodeURIComponent(email)}`
+      );
+      
+
     } catch (error) {
       alert(error.response?.data?.message || "Signup failed");
     }
@@ -27,7 +36,7 @@ export default function SignupPage() {
 
   return (
     <div className="header-container">
-      
+
       <h1 className="header-title">
         PEERPREP
       </h1>
