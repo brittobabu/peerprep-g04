@@ -11,11 +11,12 @@ export default function SignupPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:3001/api/auth/forgot-password", { userIdentity });
+      
+      const response = await axios.post("http://localhost:3001/api/auth/sendOTP", { userIdentity });
 
       console.log("API Response:", response.data); // Debugging line
 
-      router.push("/auth/verification");
+      router.push("/auth/forgot-password/verification");
     } catch (error) {
       console.log(error);
       alert(error.response?.data?.message || "Failed to send verification code");

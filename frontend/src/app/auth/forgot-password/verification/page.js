@@ -11,7 +11,7 @@ export default function SignupPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:3001/api/auth/forgot-password/verification", { verificationCode });
+      await axios.post("http://localhost:3001/api/auth/verifyOTP", { verificationCode });
       router.push("/auth/forgot-password/verification/reset-password");
     } catch (error) {
       alert(error.response?.data?.message || "Failed to verified");
