@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
-export default function SignupPage() {
+export default function ForgotPasswordPage() {
   const [userIdentity, setUserIdentity] = useState("");
   const router = useRouter();
 
@@ -18,7 +18,6 @@ export default function SignupPage() {
 
       router.push("/auth/forgot-password/verification");
     } catch (error) {
-      console.log(error);
       alert(error.response?.data?.message || "Failed to send verification code");
     }
   };
