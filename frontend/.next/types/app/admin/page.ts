@@ -1,4 +1,4 @@
-// File: C:\Users\user\OneDrive\Desktop\peerprep-g04\frontend\src\app\admin\page.js
+// File: /Users/brittobabu/Downloads/NUS/Semester 8/TIC3001/Peerprep_fork/frontend/src/app/admin/page.js
 import * as entry from '../../../../src/app/admin/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

@@ -25,3 +25,4 @@ router.patch("/:id", verifyAccessToken, verifyIsOwnerOrAdmin, updateUser);
 router.delete("/:id", verifyAccessToken, verifyIsOwnerOrAdmin, deleteUser);
 
 export default router;
+
