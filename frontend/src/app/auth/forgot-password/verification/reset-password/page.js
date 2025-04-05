@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import Link from "next/link";
 
 export default function ResetPasswordPage() {
     const [password, setPassword] = useState("");
@@ -59,7 +60,7 @@ export default function ResetPasswordPage() {
             </button>
             </form>
             <p className="footer-msg">
-            Already a member? <a href="/auth/login" className="footer-ref">Sign In</a>
+            Already a member? <Link href="/auth/login" className="footer-ref">Sign In</Link>
             </p>
         </div>
         </div>
