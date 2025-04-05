@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import Link from "next/link";
 
-export default function SignupPage() {
+export default function ForgotPasswordPage() {
   const [userIdentity, setUserIdentity] = useState("");
   const router = useRouter();
 
@@ -18,7 +19,6 @@ export default function SignupPage() {
 
       router.push("/auth/forgot-password/verification");
     } catch (error) {
-      console.log(error);
       alert(error.response?.data?.message || "Failed to send verification code");
     }
   };
@@ -50,7 +50,7 @@ export default function SignupPage() {
           </button>
         </form>
         <p className="footer-msg">
-          Already a member? <a href="/auth/login" className="footer-ref">Sign In</a>
+          Already a member? <Link href="/auth/login" className="footer-ref">Sign In</Link>
         </p>
       </div>
     </div>
