@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
+import Link from "next/link";
 
 export default function VerifyAccount() {
   const router = useRouter();
@@ -47,7 +48,7 @@ export default function VerifyAccount() {
         </form>
         <p className="footer-msg">
           Already a member?{" "}
-          <a href="/auth/login" className="footer-ref">Sign In</a>
+          <Link href="/auth/login" className="footer-ref">Sign In</Link>
         </p>
       </div>
     </div>
