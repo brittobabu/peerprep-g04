@@ -53,12 +53,7 @@ export default function QuestionsList() {
 
   const handleEdit = (question) => {
     setEditingQuestion(question.id);
-    setEditedData({
-      title: question.title,
-      description: question.description,
-      category: question.category,
-      complexity: question.complexity
-    });
+    setEditedData({ ...question });
   };
 
   const handleSave = async (id) => {
@@ -84,23 +79,32 @@ export default function QuestionsList() {
     <div className="max-w-6xl mx-auto p-6">
       <h1 className="text-2xl font-bold text-center mb-6">All Questions</h1>
       <div className="flex justify-between mb-4">
-        <select onChange={(e) => setFilterComplexity(e.target.value)} className="p-2 border rounded bg-gray-800 text-white">
-          <option value="">Filter by Complexity</option>
-          <option value="Easy">Easy</option>
-          <option value="Medium">Medium</option>
-          <option value="Hard">Hard</option>
-        </select>
-        <select onChange={(e) => setFilterCategory(e.target.value)} className="p-2 border rounded bg-gray-800 text-white">
-          <option value="">Filter by Category</option>
-          {categories.map((category, index) => (
-            <option key={index} value={category}>{category}</option>
-          ))}
-        </select>
+        <div>
+          {/* <label className="block text-white mb-1">Filter by Complexity</label> */}
+          <select value={filterComplexity} onChange={(e) => setFilterComplexity(e.target.value === 'all' ? '' : e.target.value)} className="p-2 border rounded bg-gray-800 text-white">
+            <option value="" disabled>Filter by Complexity</option>
+            <option value="all">Show All</option>
+            <option value="Easy">Easy</option>
+            <option value="Medium">Medium</option>
+            <option value="Hard">Hard</option>
+          </select>
+        </div>
+        <div>
+          {/* <label className="block text-white mb-1">Filter by Category</label> */}
+          <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value === 'all' ? '' : e.target.value)} className="p-2 border rounded bg-gray-800 text-white">
+            <option value="" disabled>Filter by Category</option>
+            <option value="all">Show All</option>
+            {categories.map((category, index) => (
+              <option key={index} value={category}>{category}</option>
+            ))}
+          </select>
+        </div>
       </div>
       <div className="overflow-x-auto">
         <table className="min-w-full border-collapse border border-gray-200 shadow-md">
           <thead className="bg-gray-800 text-white">
             <tr>
+              <th className="border p-3 text-left">ID</th>
               <th className="border p-3 text-left">Title</th>
               <th className="border p-3 text-left">Description</th>
               <th className="border p-3 text-left">Category</th>
@@ -110,10 +114,11 @@ export default function QuestionsList() {
             </tr>
           </thead>
           <tbody>
-            {filteredQuestions.map((question) => (
+            {filteredQuestions.map((question, index) => (
               <tr key={question.id} className="border">
                 {editingQuestion === question.id ? (
                   <>
+                    <td className="border p-3">{index + 1}</td>
                     <td className="border p-3"><input type="text" value={editedData.title} onChange={(e) => setEditedData({...editedData, title: e.target.value})} className="w-full p-1 border rounded" /></td>
                     <td className="border p-3"><textarea value={editedData.description} onChange={(e) => setEditedData({...editedData, description: e.target.value})} className="w-full p-1 border rounded"></textarea></td>
                     <td className="border p-3"><input type="text" value={editedData.category} onChange={(e) => setEditedData({...editedData, category: e.target.value})} className="w-full p-1 border rounded" /></td>
@@ -131,6 +136,7 @@ export default function QuestionsList() {
                   </>
                 ) : (
                   <>
+                    <td className="border p-3">{index + 1}</td>
                     <td className="border p-3">{question.title}</td>
                     <td className="border p-3">{question.description}</td>
                     <td className="border p-3">{question.category}</td>
@@ -144,11 +150,9 @@ export default function QuestionsList() {
           </tbody>
         </table>
       </div>
-      {message && <p className="text-red-500 mt-4">{message}</p>}
     </div>
   );
 }
-
 
 // 'use client';
 

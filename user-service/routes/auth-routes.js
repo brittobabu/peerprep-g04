@@ -1,6 +1,6 @@
 import express from "express";
 
-import { handleLogin, handleVerifyToken, handleVerifyCode } from "../controller/auth-controller.js";
+import { handleLogin, handleVerifyToken, handleSendVerifyCode, handleVerifyCode, handlePasswordUpdate } from "../controller/auth-controller.js";
 import { createUser } from "../controller/user-controller.js"
 import { verifyAccessToken } from "../middleware/basic-access-control.js";
 import { sendOTP, verifyOTP } from "../controller/otp-controller.js";
@@ -19,3 +19,5 @@ router.post('/verifyOTP', verifyOTP);
 router.get("/verify-token", verifyAccessToken, handleVerifyToken);
 
 export default router;
+
+
