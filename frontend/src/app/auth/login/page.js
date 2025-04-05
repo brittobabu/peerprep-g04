@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import Link from "next/link";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -13,6 +14,8 @@ export default function LoginPage() {
     e.preventDefault();
     try {
       const { data } = await axios.post("http://localhost:3001/api/auth/login", { username, password });
+      
+      localStorage.setItem("user_data", JSON.stringify(data));
       router.push("/dashboard");
     } catch (error) {
       alert(error.response?.data?.message || "Login failed");
@@ -49,9 +52,9 @@ export default function LoginPage() {
           />
 
           <div className="text-right">
-            <a href="/auth/forgot-password" className="text-blue-500 text-sm hover:underline">
+            <Link href="/auth/forgot-password" className="text-blue-500 text-sm hover:underline">
               Forgot password?
-            </a>
+            </Link>
           </div>
 
           <button
@@ -64,9 +67,9 @@ export default function LoginPage() {
 
         <p className="footer-msg">
           Don’t have an account?{" "}
-          <a href="/auth/signup" className="footer-ref">
+          <Link href="/auth/signup" className="footer-ref">
             Sign Up
-          </a>
+          </Link>
         </p>
       </div>
     </div>

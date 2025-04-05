@@ -148,7 +148,7 @@ export async function deleteUser(req, res) {
     if (!user) {
       return res.status(404).json({ message: `User ${userId} not found` });
     }
-
+    
     await _deleteUserById(userId);
     return res.status(200).json({ message: `Deleted user ${userId} successfully` });
   } catch (err) {
