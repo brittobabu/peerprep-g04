@@ -14,6 +14,8 @@ export default function LoginPage() {
     e.preventDefault();
     try {
       const { data } = await axios.post("http://localhost:3001/api/auth/login", { username, password });
+      
+      localStorage.setItem("user_data", JSON.stringify(data));
       router.push("/dashboard");
     } catch (error) {
       alert(error.response?.data?.message || "Login failed");

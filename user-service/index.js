@@ -4,6 +4,7 @@ import cors from "cors";
 import userRoutes from "./routes/user-routes.js";
 import authRoutes from "./routes/auth-routes.js";
 import questionRoutes from "./routes/question-routes.js"
+import matchingRoutes from "./routes/matching-routes.js"
 
 const app = express();
 
@@ -34,6 +35,7 @@ app.use((req, res, next) => {
 
 app.use("/users", userRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/match", matchingRoutes);
 app.use("/admin/question", questionRoutes);
 
 app.get("/", (req, res, next) => {
