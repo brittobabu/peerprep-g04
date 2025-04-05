@@ -3,12 +3,17 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import {FullScreenLoader, FullScreenSuccess} from "../../../../utils/transition";
 
 export default function SignupPage() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [loadingText, setLoadingText] = useState("Sending OTP...");
+  const [success, setSuccess] = useState(false);
+  const [successText, setSuccessText] = useState("OTP Sent");
   const router = useRouter();
 
   const handleSubmit = async (e) => {
@@ -17,20 +22,40 @@ export default function SignupPage() {
       alert("Passwords do not match");
       return;
     }
+    setLoading(true);
     try {
       await axios.post("http://localhost:3001/api/auth/signup", { username, email, password, confirmPassword });
       
       // sent otp to email
       const response = await axios.post("http://localhost:3001/api/auth/sendOTP", {email });
-      console.log("API Response:", response.data); // Debugging line
 
-      router.push(
+      if(!response.data?.success){
+        alert("Failed to send OTP");
+        setLoading(false);
+        return;
+      }
+
+      setSuccess(true);
+      await new Promise((resolve) => setTimeout(resolve, 2000));      
+
+      //set redirect path
+      const redirect = router.push(
         `/auth/signup/verify-account?email=${encodeURIComponent(email)}`
       );
+      //set delay
+      const delay = new Promise((resolve) => setTimeout(resolve, 1000));
+      // Wait for whichever finishes first
+      await Promise.race([redirect, delay]);
+      // If redirect isn't done yet, show redirecting
+      setLoadingText("Redirecting...");
+      await redirect;
       
 
     } catch (error) {
       alert(error.response?.data?.message || "Signup failed");
+    } finally {
+      setLoading(false);
+      setSuccess(false);
     }
   };
 
@@ -86,6 +111,8 @@ export default function SignupPage() {
           >
             SIGN UP
           </button>
+          {loading && <FullScreenLoader text={loadingText}/>}
+          {success && <FullScreenSuccess text={successText}/>}
         </form>
         <p className="footer-msg">
           Already a member? <a href="/auth/login" className="footer-ref">Sign In</a>
