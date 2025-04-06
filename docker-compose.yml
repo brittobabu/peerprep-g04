@@ -6,14 +6,26 @@ services:
       context: ./user-service
       dockerfile: Dockerfile
     ports:
-      - "3001:3001"
-    
+      - "3002:3002"
+    depends_on:
+      - rabbitmq
+    environment:
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "4002:4002"
     depends_on:
       - backend
+
+  rabbitmq:
+    image: rabbitmq:management
+    ports:
+      - "5672:5672"     # AMQP
+      - "15672:15672"   # HTTP UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest

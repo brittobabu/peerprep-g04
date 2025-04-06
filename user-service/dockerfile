@@ -10,7 +10,7 @@ RUN rm -rf node_modules package-lock.json
 
 RUN npm install
 
-EXPOSE 3001
+EXPOSE 3002
 
 COPY . .
 
