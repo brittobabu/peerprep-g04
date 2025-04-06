@@ -33,7 +33,7 @@ export default function Dashboard() {
         setResponseMessage('');
 
         try {
-            const response = await axios.post('http://localhost:3001/api/match/findMatch', {
+            const response = await axios.post('http://localhost:3002/api/match/findMatch', {
                 topic,
                 complexity,
                 userId,

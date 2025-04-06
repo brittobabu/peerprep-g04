@@ -1,5 +1,5 @@
 const amqp = require('amqplib');
-
+const { matchUser } = require('../matching/matching.js');
 
 const startConsumer = async () => {
     const connection = await amqp.connect( 'amqp://guest:guest@localhost:5672/');
@@ -12,11 +12,12 @@ const startConsumer = async () => {
   
     channel.consume(queue, (msg) => {
       if (msg !== null) {
+
         const data = JSON.parse(msg.content.toString());
         console.log('✅ Received message:', data);
   
         // Call your matcher logic here
-        console.log("implement matching")
+         const matchedUser = matchUser(data);
   
         channel.ack(msg);
       }

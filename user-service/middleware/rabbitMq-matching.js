@@ -7,10 +7,12 @@ let channel, connection;
 export async function sendToQueue (message)  {
  
     try {
-        connection = await amqp.connect('amqp://guest:guest@localhost:5672');
+        console.log('creating matching');
+        connection = await amqp.connect('amqp://guest:guest@host.docker.internal:5672');
         channel = await connection.createChannel();
         const queue = 'matching_queue';
     
+        console.log('done creating matching' + queue);
         await channel.assertQueue(queue, { durable: true });
         channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)), { persistent: true });
     
