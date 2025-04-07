@@ -16,7 +16,7 @@ export default function VerifyAccount() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:3001/api/auth/verifyOTP", {
+      await axios.post("http://localhost:3000/api/auth/verifyOTP", {
         email,
         verificationCode,
       });
@@ -25,6 +25,7 @@ export default function VerifyAccount() {
       alert(error.response?.data?.message || "Failed to verify");
     }
   };
+  
 
   return (
     <div className="header-container">

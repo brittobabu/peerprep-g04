@@ -19,7 +19,7 @@ export default function QuestionsList() {
 
   const fetchQuestions = async () => {
     try {
-      const response = await axios.get("http://localhost:3001/admin/question/all");
+      const response = await axios.get("http://localhost:3000/admin/question/all");
       setQuestions(response.data.data);
       setFilteredQuestions(response.data.data);
       const uniqueCategories = [...new Set(response.data.data.map(q => q.category))];
