@@ -29,7 +29,7 @@ export default function Dashboard() {
   useEffect(() => {
     if (!userId) return;
 
-    socket = io('http://localhost:5000');
+    socket = io('http://matching-service:5000');
 
     socket.emit('register', userId);
 
@@ -54,7 +54,7 @@ export default function Dashboard() {
 
         try {
             setResponseMessage('Searching for match...');
-            await axios.post('http://localhost:5000/api/match', {
+            await axios.post('http://matching-service:5000/api/match', {
               userId,
               topic,
               complexity

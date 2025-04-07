@@ -9,10 +9,13 @@ const { initSocket, getIO } = require('./socket.js');
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: { origin: '*' }
+  cors: { origin: ['http://localhost:4000', 'http://frontend:4000'], 
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type', 'Authorization'],}
 });
 
 initSocket(io); // setup socket event listeners
+
 
 app.use(cors());
 app.use(express.json());

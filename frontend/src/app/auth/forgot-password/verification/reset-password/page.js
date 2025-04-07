@@ -17,7 +17,7 @@ export default function ResetPasswordPage() {
             return;
           }
         try {
-            await axios.post("http://localhost:3001/api/auth/forgot-password/verification/reset-password", { password, confirmPassword });
+            await axios.post("http://localhost:3000/api/auth/forgot-password/verification/reset-password", { password, confirmPassword });
             router.push("/auth/login");
         } catch (error) {
             alert(error.response?.data?.message || "Failed to update password");

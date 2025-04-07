@@ -12,7 +12,7 @@ export default function VerificationPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:3001/api/auth/verifyOTP", { verificationCode });
+      await axios.post("http://localhost:3000/api/auth/verifyOTP", { verificationCode });
       router.push("/auth/forgot-password/verification/reset-password");
     } catch (error) {
       console.log(error);

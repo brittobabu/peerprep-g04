@@ -3,7 +3,7 @@ const { matchUser } = require('../matching/matching.js');
 const { getIO, getSocketMap } = require('../socket.js');
 
 async function startConsumer() {
-  const connection = await amqp.connect('amqp://guest:guest@localhost:5672');
+  const connection = await amqp.connect('amqp://guest:guest@rabbitmq:5672');
   const channel = await connection.createChannel();
   const queue = 'matching_queue';
 
