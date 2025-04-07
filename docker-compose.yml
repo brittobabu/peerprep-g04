@@ -24,8 +24,17 @@ services:
   rabbitmq:
     image: rabbitmq:management
     ports:
-      - "5672:5672"     # AMQP
-      - "15672:15672"   # HTTP UI
+      - "5672:5672" # AMQP
+      - "15672:15672" # HTTP UI
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
+
+  collab-service:
+  build: ./collab-service
+  ports:
+    - "5002:5002"
+  environment:
+    - MONGO_URI=mongodb://mongo:27017/peerprep-collab
+  depends_on:
+    - mongo
