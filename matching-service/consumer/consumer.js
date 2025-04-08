@@ -26,17 +26,28 @@ async function startConsumer() {
     const queue = 'matching_queue';
 
     await channel.assertQueue(queue, { durable: true });
-    console.log('📡 Listening for matches...');
+    console.log('Listening for matching request from frontend...');
 
-    const waitingList = [];
+    const waitingList = []; // Array of { user, timestamp }
 
     channel.consume(queue, async (msg) => {
       if (!msg) return;
 
       const data = JSON.parse(msg.content.toString());
-      console.log('📨 Received from queue:', data);
+      console.log('Received from queue:', data);
+
+      // Remove expired users from waiting list
+      const now = Date.now();
+      const TIMEOUT = 30 * 1000;
+      for (let i = waitingList.length - 1; i >= 0; i--) {
+        if (now - waitingList[i].timestamp > TIMEOUT) {
+          console.log(`Removing timed-out user: ${waitingList[i].user.userId}`);
+          waitingList.splice(i, 1);
+        }
+      }
 
       const matchedPair = matchUser(data, waitingList);
+
       if (matchedPair) {
         const io = getIO();
         const sockets = getSocketMap();
@@ -45,7 +56,7 @@ async function startConsumer() {
           const socketId = sockets[user.userId];
           if (socketId) {
             io.to(socketId).emit('matchFound', { partner: matchedPair });
-            console.log(`📤 Match sent to socket ${socketId} for user ${user.userId}`);
+            console.log(`Match sent to socket ${socketId} for user ${user.userId}`);
           }
         });
       }
