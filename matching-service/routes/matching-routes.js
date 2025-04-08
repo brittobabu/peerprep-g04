@@ -4,6 +4,7 @@ const router = express.Router();
 
 router.post('/match', async (req, res) => {
   const { userId, topic, complexity } = req.body;
+  console.log(req.body + "  here..")
   if (!userId || !topic || !complexity) {
     return res.status(400).json({ message: 'Missing data' });
   }

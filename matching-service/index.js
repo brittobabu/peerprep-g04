@@ -21,5 +21,13 @@ app.use(cors());
 app.use(express.json());
 app.use('/api', matchRoutes);
 
+app.get("/", (req, res, next) => {
+  console.log("Sending msg fom rabbitMQ!");
+  res.json({
+    message: "Hello World from matching",
+  });
+});
+
 server.listen(5000, () => console.log('maching service running on port 5000'));
 startConsumer(); // start RabbitMQ consumer
+
