@@ -13,7 +13,7 @@ export default function ForgotPasswordPage() {
     e.preventDefault();
     try {
       
-      const response = await axios.post("http://localhost:3001/api/auth/sendOTP", { userIdentity });
+      const response = await axios.post("http://localhost:3000/api/auth/sendOTP", { userIdentity });
 
       console.log("API Response:", response.data); // Debugging line
 
