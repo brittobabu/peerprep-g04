@@ -1,10 +1,13 @@
 function matchUser(user, waitingList) {
-  const existing = waitingList.find(u => u.topic === user.topic && u.complexity === user.complexity);
-  if (existing) {
-    waitingList.splice(waitingList.indexOf(existing), 1);
-    return { user1: existing, user2: user };
+  const index = waitingList.findIndex(
+    (entry) => entry.user.topic === user.topic && entry.user.complexity === user.complexity && entry.user.userId != user.userId
+  );
+
+  if (index !== -1) {
+    const matched = waitingList.splice(index, 1)[0].user;
+    return { user1: matched, user2: user };
   } else {
-    waitingList.push(user);
+    waitingList.push({ user, timestamp: Date.now() });
     return null;
   }
 }
