@@ -31,4 +31,3 @@ const QuestionModelSchema = new Schema({
 });
 
 export default mongoose.model("QuestionModel", QuestionModelSchema);
-

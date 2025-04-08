@@ -4,6 +4,7 @@ import { findUserByUsername as _findUserByUsername, findUserByUsernameOrEmail as
 import { formatUserResponse } from "./user-controller.js";
 import { createUser as _createUser } from "./user-controller.js";
 
+
 //Login
 export async function handleLogin(req, res) {
   const { username, password } = req.body;
@@ -30,8 +31,58 @@ export async function handleLogin(req, res) {
     }
   } else {
     return res.status(400).json({ message: "Missing username and/or password" });
+
+    
+/**find user and send verification code to email for forgot password*/
+export async function handleSendVerifyCode(req, res) {
+  const { userIdentity } = req.body;
+  if(userIdentity){
+    try {
+      const user = await _findUserByUsernameOrEmail(userIdentity, userIdentity);
+      if (!user) {
+        return res.status(401).json({ message: "User not found" });
+      }
+
+      return res.status(200).json({ message: "Verification code sent", data: { ...formatUserResponse(user) } });
+    } catch (err) {
+      return res.status(500).json({ message: err.message });
+    }
+  }else{
+    return res.status(400).json({ message: "Missing username or email" });
   }
 }
+
+
+/**verify if code matches*/
+export async function handleVerifyCode(req, res) {
+  const { verificationCode } = req.body;
+  if(verificationCode){
+    try {
+      return res.status(200).json({ message: "Verification code pass", data: { verificationCode } });
+    } catch (err) {
+      return res.status(500).json({ message: err.message });
+    }
+  }else{
+    return res.status(400).json({ message: "Missing Verification code" });
+  }
+}
+
+
+/**update password*/
+export async function handlePasswordUpdate(req, res) {
+  const { password, confirmPassword } = req.body;
+  if(password && confirmPassword){
+    try {
+      return res.status(200).json({ message: "Password updated", data: { password, confirmPassword } });
+    } catch (err) {
+      return res.status(500).json({ message: err.message });
+    }
+  }else{
+    return res.status(400).json({ message: "Missing password" });
+  }
+}
+
+
 
 /**Session control */
 export async function handleVerifyToken(req, res) {
