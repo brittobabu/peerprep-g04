@@ -20,7 +20,7 @@ export default function VerifyAccount() {
     e.preventDefault();
     setLoading(true);
     try {
-      await axios.post("http://localhost:3001/api/auth/verifyOTP", {
+      await axios.post("http://localhost:3000/api/auth/verifyOTP", {
         email,
         verificationCode,
       });
@@ -41,6 +41,7 @@ export default function VerifyAccount() {
       setLoading(false);
     }
   };
+  
 
   return (
     <div className="header-container">

@@ -24,10 +24,12 @@ export default function SignupPage() {
     }
     setLoading(true);
     try {
-      await axios.post("http://localhost:3001/api/auth/signup", { username, email, password, confirmPassword });
+      await axios.post("http://localhost:3000/api/auth/signup", { username, email, password, confirmPassword });
       
       // sent otp to email
-      const response = await axios.post("http://localhost:3001/api/auth/sendOTP", {email });
+
+      const response = await axios.post("http://localhost:3000/api/auth/sendOTP", {email });
+
 
       if(!response.data?.success){
         alert("Failed to send OTP");

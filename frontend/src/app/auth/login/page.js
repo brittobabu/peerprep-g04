@@ -18,6 +18,7 @@ export default function LoginPage() {
     setLoading(true);
     await new Promise((resolve) => setTimeout(resolve, 2000));
     try {
+
       const { data } = await axios.post("http://localhost:3001/api/auth/login", { username, password });
 
       //set redirect path
@@ -29,6 +30,7 @@ export default function LoginPage() {
       // If redirect isn't done yet, show redirecting
       setLoadingText("Redirecting...");
       await redirect;
+
     } catch (error) {
       alert(error.response?.data?.message || "Login failed");
     } finally {

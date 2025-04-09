@@ -19,6 +19,10 @@ export default function ForgotPasswordPage() {
     e.preventDefault();
     setLoading(true);
     try {
+      
+      const response = await axios.post("http://localhost:3000/api/auth/sendOTP", { userIdentity });
+
+
 
       //#1 check if the email is registered/exist in system database
       const response = await axios.get(`http://localhost:3001/api/auth/findUserByEmail?email=${encodeURIComponent(email)}`);
