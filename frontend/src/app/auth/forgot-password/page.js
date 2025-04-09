@@ -19,13 +19,9 @@ export default function ForgotPasswordPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      
-      const response = await axios.post("http://localhost:3000/api/auth/sendOTP", { userIdentity });
-
-
 
       //#1 check if the email is registered/exist in system database
-      const response = await axios.get(`http://localhost:3001/api/auth/findUserByEmail?email=${encodeURIComponent(email)}`);
+      const response = await axios.get(`http://localhost:3000/api/auth/findUserByEmail?email=${encodeURIComponent(email)}`);
       if (!response.data?.data) {
         alert("Invalid Email");
         setLoading(false);
@@ -35,7 +31,7 @@ export default function ForgotPasswordPage() {
       const userId = response.data.data.id;
 
       //#2 sent otp to email
-      const otpResponse = await axios.post("http://localhost:3001/api/auth/sendOTP", {email });
+      const otpResponse = await axios.post("http://localhost:3000/api/auth/sendOTP", {email });
 
       if(!otpResponse.data?.success){
         alert("Failed to send OTP");
