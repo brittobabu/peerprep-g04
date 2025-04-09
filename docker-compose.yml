@@ -31,7 +31,9 @@ services:
       RABBITMQ_DEFAULT_PASS: guest
 
   collab-service:
-  build: ./collab-service
+  build:
+  context: ./collab-service
+  dockerfile: Dockerfile
   ports:
     - "5002:5002"
   environment:
