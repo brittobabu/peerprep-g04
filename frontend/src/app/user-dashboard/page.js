@@ -1,98 +1,145 @@
 'use client';
 
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { registerSocket, disconnectSocket, sendMatchRequest } from './matching_socket.js';
 
 export default function Dashboard() {
-    const [userId, setUserId] = useState(null);
-    const [topic, setTopic] = useState('');
-    const [complexity, setComplexity] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const [responseMessage, setResponseMessage] = useState('');
+  const [userId, setUserId] = useState(null);
+  const [topic, setTopic] = useState('OOP');
+  const [complexity, setDifficulty] = useState('Easy');
+  const [isLoading, setIsLoading] = useState(false);
+  const [responseMessage, setResponseMessage] = useState('');
+  const [timer, setTimer] = useState(0);
 
-
-    useEffect(() => {
-        // Get the 'user_data' from localStorage
-        const userData = localStorage.getItem("user_data");
-        if (userData) {
-            // If there's user data, parse it into an object
-            setUserId(JSON.parse(userData).data.id)
-        } else {
-            setUserId(null); // If no user data, they are not logged in
-        }
-    }, []);
-
-    if (!userId) {
-        return <p1>You must be logged in to access the dashboard.</p1>;
+  useEffect(() => {
+    const userData = localStorage.getItem("user_data");
+    if (userData) {
+      const parsed = JSON.parse(userData);
+      setUserId(parsed.data.username);
     }
-    
+  }, []);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setIsLoading(true);
-        setResponseMessage('');
+  useEffect(() => {
+    if (!userId) return;
 
-        try {
-            const response = await axios.post('http://localhost:3001/api/match/findMatch', {
-                topic,
-                complexity,
-                userId,
-            });
-            
-            setResponseMessage(response.data.message)
-            
-        } catch (error) {
-            setResponseMessage('Error submitting details.' + error);
-        } finally {
-            setIsLoading(false);
-        }
+    registerSocket(userId, (data) => {
+      setResponseMessage(`✅ Match found with user: ${
+        data.partner.user1.userId === userId
+          ? data.partner.user2.userId
+          : data.partner.user1.userId
+      }`);
+      setIsLoading(false);
+      setTimer(0);
+    });
+
+    return () => {
+      disconnectSocket();
     };
+  }, [userId]);
 
-    return (
-        <div className="w-full px-4 py-2 border border-gray-300 rounded">
-        <h1 className="text-xl font-semibold mb-4">Welcome to the Dashboard</h1>
-        <p className="mb-4">Id: {userId}</p>
-        <div className="w-full px-4 py-2 border border-gray-300 rounded">
-            <h1 className="text-xl font-semibold mb-4">Submit Details</h1>
-            <form onSubmit={handleSubmit}>
-                <div className="mb-4">
-                    <label htmlFor="topic" className="block text-sm font-medium mb-2">Topic</label>
-                    <input
-                        type="text"
-                        id="topic"
-                        value={topic}
-                        onChange={(e) => setTopic(e.target.value)}
-                        required
-                        className="w-full px-4 py-2 border border-gray-300 rounded"
-                    />
-                </div>
-                <div className="mb-4">
-                    <label htmlFor="complexity" className="block text-sm font-medium mb-2">Complexity</label>
-                    <input
-                        type="text"
-                        id="complexity"
-                        value={complexity}
-                        onChange={(e) => setComplexity(e.target.value)}
-                        required
-                        className="w-full px-4 py-2 border border-gray-300 rounded"
-                    />
-                </div>
-               
-                <div className="mb-4">
-                    <button
-                        type="submit"
-                        disabled={isLoading}
-                        className="w-full px-4 py-2 border border-gray-300 rounded bg-blue-500 text-white hover:bg-blue-600"
-                    >
-                        {isLoading ? 'Submitting...' : 'Submit'}
-                    </button>
-                </div>
-            </form>
-            {responseMessage && <p className="mt-4 text-green-500">{responseMessage}</p>}
+  useEffect(() => {
+    let interval;
+  
+    if (isLoading) {
+      interval = setInterval(() => {
+        setTimer((prev) => {
+          const next = prev + 1;
+          if (next >= 30) {
+            setIsLoading(false);
+            setResponseMessage(' No match found. Please try again later.');
+          }
+          return next;
+        });
+      }, 1000);
+      
+    } else {
+      clearInterval(interval);
+      setTimer(0);
+    }
+  
+    return () => clearInterval(interval);
+  }, [isLoading]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!userId) {
+      setResponseMessage('You must be logged in to search for a match.');
+      return;
+    }
+
+    setIsLoading(true);
+    setResponseMessage('Searching for match...');
+
+    try {
+      await sendMatchRequest(userId, topic, complexity);
+    } catch (err) {
+      setResponseMessage('❌ Failed to send match request');
+      console.error(err);
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#f5f5f5]">
+      <div className="bg-[#fbe7d0] p-4 flex justify-between items-center shadow-md">
+        <div>
+          <h1 className="text-4xl font-bold text-[#1e1e1e]">PEERPREP</h1>
+          <p className="text-sm">Practice coding interviews live with peers!</p>
         </div>
+        <div className="flex items-center gap-3">
+          <p>{userId ?? 'Your name'}</p>
+          <button className="ml-4 px-4 py-1 bg-[#e67e22] text-white rounded-lg shadow hover:bg-[#cf711c]">
+            Logout
+          </button>
+        </div>
+      </div>
+
+      <div className="flex justify-center items-start gap-12 mt-16">
+        <div className="bg-[#fcebd5] border-2 border-blue-400 rounded-xl p-6 w-80 shadow-lg">
+          <h2 className="text-2xl font-bold mb-6 text-center">Practice</h2>
+
+          <div className="mb-4">
+            <label className="block mb-2">Choose Topic</label>
+            <select
+              value={topic}
+              onChange={(e) => setTopic(e.target.value)}
+              className="w-full border border-gray-300 rounded px-3 py-2"
+            >
+              <option>OOP</option>
+              <option>DSA</option>
+              <option>System Design</option>
+            </select>
+          </div>
+
+          <div className="mb-6">
+            <label className="block mb-2">Difficulty Level</label>
+            <select
+              value={complexity}
+              onChange={(e) => setDifficulty(e.target.value)}
+              className="w-full border border-gray-300 rounded px-3 py-2"
+            >
+              <option>Easy</option>
+              <option>Medium</option>
+              <option>Hard</option>
+            </select>
+          </div>
+
+          <div className="flex flex-col gap-3 items-center">
+            <button
+              onClick={handleSubmit}
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-[#e67e22] text-white px-4 py-2 rounded-lg shadow hover:bg-[#cf711c]"
+            >
+              {isLoading ? `Searching... (${timer}s)` : 'Search'}
+            </button>
+
+            {responseMessage && (
+              <p className="mt-2 text-green-700 text-center">{responseMessage}</p>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
-    
-
-    );
+  );
 }
-

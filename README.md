@@ -13,3 +13,6 @@
 6. If the server starts successfully, you will see a "User service server listening on ..." message.
 
 ### Complete User Service Guide: [User Service Guide](./user-service/README.md)
+
+### Run in docker
+  Run the cmd : docker-compose up --build

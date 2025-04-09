@@ -7,9 +7,10 @@ export async function connectToDB() {
     process.env.ENV === "PROD"
       ? process.env.DB_CLOUD_URI
       : process.env.DB_LOCAL_URI;
-
+  console.log(mongoDBUri)
   await connect(mongoDBUri);
 }
+
 
 export async function createUser(username, email, password) {
   return new UserModel({ username, email, password }).save();
