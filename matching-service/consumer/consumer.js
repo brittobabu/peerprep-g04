@@ -1,11 +1,12 @@
 const amqp = require('amqplib');
 const { matchUser } = require('../matching/matching.js');
 const { getIO, getSocketMap } = require('../socket.js');
+const {saveMatch} = require('../db/match-save.js')
 
 async function connectWithRetry(retries = 5, delay = 5000) {
   for (let i = 0; i < retries; i++) {
     try {
-      const connection = await amqp.connect('amqp://guest:guest@rabbitmq:5672');
+      const connection = await amqp.connect('amqp://guest:guest@localhost:5672');
       console.log(' Connected to RabbitMQ');
       return connection;
     } catch (err) {
@@ -51,14 +52,16 @@ async function startConsumer() {
       if (matchedPair) {
         const io = getIO();
         const sockets = getSocketMap();
-
         [matchedPair.user1, matchedPair.user2].forEach((user) => {
           const socketId = sockets[user.userId];
           if (socketId) {
             io.to(socketId).emit('matchFound', { partner: matchedPair });
             console.log(`Match sent to socket ${socketId} for user ${user.userId}`);
           }
+          console.log("Match sent to user "+ user.userId)
         });
+        await saveMatch(matchedPair.user1, matchedPair.user2, matchedPair.user1.topic, matchedPair.user1.complexity);
+
       }
 
       channel.ack(msg);
