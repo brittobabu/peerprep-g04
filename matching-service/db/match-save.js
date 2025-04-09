@@ -8,7 +8,7 @@ async function saveMatch(user1, user2, topic, difficulty) {
       topic,
       difficulty,
     });
-
+  console.log(match)
     await match.save();
     console.log(' Match saved to db ');
   } catch (err) {
