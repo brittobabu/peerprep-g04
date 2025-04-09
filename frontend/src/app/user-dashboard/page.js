@@ -51,6 +51,7 @@ export default function Dashboard() {
           return next;
         });
       }, 1000);
+      
     } else {
       clearInterval(interval);
       setTimer(0);

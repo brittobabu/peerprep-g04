@@ -19,7 +19,7 @@ export default function LoginPage() {
     await new Promise((resolve) => setTimeout(resolve, 2000));
     try {
 
-      const { data } = await axios.post("http://localhost:3001/api/auth/login", { username, password });
+      const { data } = await axios.post("http://localhost:3000/api/auth/login", { username, password });
 
       //set redirect path
       const redirect = router.push("/dashboard");

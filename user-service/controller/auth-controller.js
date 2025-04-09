@@ -31,7 +31,7 @@ export async function handleLogin(req, res) {
     }
   } else {
     return res.status(400).json({ message: "Missing username and/or password" });
-
+  }}
     
 /**find user and send verification code to email for forgot password*/
 export async function handleSendVerifyCode(req, res) {
