@@ -5,6 +5,7 @@ const { Server } = require('socket.io');
 const matchRoutes = require('./routes/matching-routes.js');
 const {startConsumer} = require('./consumer/consumer.js')
 const { initSocket, getIO } = require('./socket.js');
+const connectToDB = require('./db/mongo-connect.js');
 
 const app = express();
 const server = http.createServer(app);
@@ -30,4 +31,5 @@ app.get("/", (req, res, next) => {
 
 server.listen(5000, () => console.log('maching service running on port 5000'));
 startConsumer(); // start RabbitMQ consumer
+connectToDB()
 
