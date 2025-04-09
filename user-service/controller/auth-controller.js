@@ -1,13 +1,11 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { findUserByUsername as _findUserByUsername } from "../model/repository.js";
-import { findUserByUsernameOrEmail as _findUserByUsernameOrEmail } from "../model/repository.js";
+import { findUserByUsername as _findUserByUsername, findUserByUsernameOrEmail as _findUserByUsernameOrEmail } from "../model/repository.js";
 import { formatUserResponse } from "./user-controller.js";
 import { createUser as _createUser } from "./user-controller.js";
 
 
 //Login
-
 export async function handleLogin(req, res) {
   const { username, password } = req.body;
   if (username && password) {
@@ -33,10 +31,8 @@ export async function handleLogin(req, res) {
     }
   } else {
     return res.status(400).json({ message: "Missing username and/or password" });
-  }
-}
 
-
+    
 /**find user and send verification code to email for forgot password*/
 export async function handleSendVerifyCode(req, res) {
   const { userIdentity } = req.body;
@@ -85,6 +81,7 @@ export async function handlePasswordUpdate(req, res) {
     return res.status(400).json({ message: "Missing password" });
   }
 }
+
 
 
 /**Session control */
