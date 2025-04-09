@@ -10,7 +10,7 @@ const connectToDB = require('./db/mongo-connect.js');
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: { origin: ['http://localhost:4000', 'http://frontend:4000','http://frontend:4001'], 
+  cors: { origin: ['http://localhost:4000', 'http://frontend:4000'], 
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type', 'Authorization'],}
 });
@@ -30,6 +30,8 @@ app.get("/", (req, res, next) => {
 });
 
 server.listen(5000, () => console.log('maching service running on port 5000'));
-startConsumer(); // start RabbitMQ consumer
 connectToDB()
+
+startConsumer(); // start RabbitMQ consumer
+
 

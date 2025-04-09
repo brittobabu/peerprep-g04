@@ -28,7 +28,7 @@ export default function ResetPasswordPage() {
         try {
 
             //update new password
-            await axios.post("http://localhost:3001/api/auth/forgot-password/verification/reset-password", {id:userId, password, confirmPassword });
+            await axios.post("http://localhost:3000/api/auth/forgot-password/verification/reset-password", {id:userId, password, confirmPassword });
 
             
             //redirect to login page

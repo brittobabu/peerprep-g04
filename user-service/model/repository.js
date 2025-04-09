@@ -11,6 +11,7 @@ export async function connectToDB() {
   await connect(mongoDBUri);
 }
 
+
 export async function createUser(username, email, password) {
   return new UserModel({ username, email, password }).save();
 }

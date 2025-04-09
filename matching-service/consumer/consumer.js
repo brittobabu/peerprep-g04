@@ -6,7 +6,7 @@ const {saveMatch} = require('../db/match-save.js')
 async function connectWithRetry(retries = 5, delay = 5000) {
   for (let i = 0; i < retries; i++) {
     try {
-      const connection = await amqp.connect('amqp://guest:guest@localhost:5672');
+      const connection = await amqp.connect('amqp://guest:guest@rabbitmq:5672');
       console.log(' Connected to RabbitMQ');
       return connection;
     } catch (err) {
@@ -72,3 +72,4 @@ async function startConsumer() {
 }
 
 module.exports = { startConsumer };
+

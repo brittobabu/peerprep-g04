@@ -23,7 +23,7 @@ export default function VerificationPage() {
     try {
 
       //verify of OTP input is the correct one
-      await axios.post("http://localhost:3001/api/auth/verifyOTP", {email, verificationCode,});
+      await axios.post("http://localhost:3000/api/auth/verifyOTP", {email, verificationCode,});
 
       //direct to reset password page if OTP pass
       //set redirect path

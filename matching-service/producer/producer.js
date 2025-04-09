@@ -3,7 +3,7 @@ const amqp = require('amqplib');
 let channel;
 
 async function sendToQueue(message) {
-  const connection = await amqp.connect('amqp://guest:guest@localhost:5672');
+  const connection = await amqp.connect('amqp://guest:guest@rabbitmq:5672');
   channel = await connection.createChannel();
   const queue = 'matching_queue';
 

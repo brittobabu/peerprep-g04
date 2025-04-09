@@ -39,22 +39,27 @@ export default function Dashboard() {
 
   useEffect(() => {
     let interval;
-  
-    if (isLoading) {
-      interval = setInterval(() => {
-        setTimer((prev) => {
-          const next = prev + 1;
-          if (next >= 30) {
-            setIsLoading(false);
-            setResponseMessage(' No match found. Please try again later.');
-          }
-          return next;
-        });
-      }, 1000);
-    } else {
-      clearInterval(interval);
-      setTimer(0);
-    }
+
+  if (isLoading) {
+    // Start the timer from 30
+    setTimer(30);
+
+    interval = setInterval(() => {
+      setTimer((prev) => {
+        const next = prev - 1;
+        if (next <= 0) {
+          clearInterval(interval); // Stop the interval when the timer reaches 0
+          setIsLoading(false);
+          setResponseMessage('No match found. Please try again later.');
+        }
+        return next;
+      });
+    }, 1000);
+
+  } else {
+    clearInterval(interval);
+    setTimer(0);
+  }
   
     return () => clearInterval(interval);
   }, [isLoading]);
@@ -98,7 +103,7 @@ export default function Dashboard() {
           <h2 className="text-2xl font-bold mb-6 text-center">Practice</h2>
 
           <div className="mb-4">
-            <label className="block mb-2">Choose Topic</label>
+            <label className="block mb-2">Choose Topic * </label>
             <select
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
