@@ -12,9 +12,15 @@
     "axios": "^1.8.1",
     "next": "^15.2.4",
     "nookies": "^2.5.2",
+    "quill": "^2.0.3",
+    "quill-cursors": "^4.0.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "socket.io-client": "^4.8.1"
+    "socket.io-client": "^4.8.1",
+    "y-quill": "^1.0.0",
+    "y-webrtc": "^10.3.0",
+    "y-websocket": "^3.0.0",
+    "yjs": "^13.6.24"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
