@@ -2,10 +2,15 @@
 
 import { useState } from 'react';
 import { useCollaboration } from './collab-socket.js'; 
+import { useSearchParams } from 'next/navigation'
 import MonacoEditorWrapper from './monocoeditor.js';
 
 export default function CollaborativeMonacoEditor() {
-  const [roomId, setRoomId] = useState('');
+  const searchParams = useSearchParams();
+  const user1 = searchParams.get('user1');
+  const user2 = searchParams.get('user2');
+
+  const [roomId, setRoomId] = useState(user1+user2);
   const [isStarted, setIsStarted] = useState(false); // Track if collaboration is started
   const { content, handleEditorChange, handleLogout } = useCollaboration(roomId, '// Start typing...');
 
@@ -20,15 +25,6 @@ export default function CollaborativeMonacoEditor() {
     <div className="min-h-screen bg-gray-100 p-4">
       <h1 className="text-xl font-semibold mb-4">Collaborative Monaco Editor</h1>
 
-      <div>
-        <input
-          type="text"
-          placeholder="Enter Room ID"
-          value={roomId}
-          onChange={(e) => setRoomId(e.target.value)}
-          className="mb-4 p-2 border border-gray-400 rounded"
-        />
-      </div>
 
       {/* Show "Start" button if Room ID is entered and collaboration hasn't started */}
       {!isStarted && roomId && (

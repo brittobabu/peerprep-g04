@@ -8,7 +8,7 @@ export const useCollaboration = (roomId, initialContent) => {
 
   useEffect(() => {
     if (!roomId) return; // Don't connect if no roomId is provided
-
+    
     const socket = new WebSocket('ws://localhost:8000');
     socketRef.current = socket;
 
@@ -23,6 +23,7 @@ export const useCollaboration = (roomId, initialContent) => {
         if (message.type === 'init' || message.type === 'update') {
           isUpdating.current = true;
           setContent(message.data);
+          // console.log(message.data)
         }
       } catch (err) {
         console.error('Error parsing message:', err);

@@ -21,13 +21,22 @@ services:
       context: ./matching-service
       dockerfile: Dockerfile
     ports:
-      - "5000:5000" 
+      - "5000:5000"
     depends_on:
       - rabbitmq
       - mongodb
     environment:
       RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
       MONGODB_URL: mongodb://mongodb:27017
+    networks:
+      - app_network
+
+  collabservice:
+    build:
+      context: ./collab-service
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
     networks:
       - app_network
 
@@ -40,17 +49,19 @@ services:
     depends_on:
       - backend
       - matching
+      - collabservice
     environment:
       MATCHING_URL: http://matching:5000
       BACKEND_URL: http://backend:3000
+      COLLAB_URL: ws://collabservice:8000
     networks:
       - app_network
 
   rabbitmq:
     image: rabbitmq:management
     ports:
-      - "5672:5672"     # AMQP
-      - "15672:15672"   # HTTP UI
+      - "5672:5672"
+      - "15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest

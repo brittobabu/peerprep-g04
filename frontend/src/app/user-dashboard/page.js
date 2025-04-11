@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { registerSocket, disconnectSocket, sendMatchRequest } from './matching_socket.js';
+import { useRouter } from 'next/navigation';
 
 export default function Dashboard() {
   const [userId, setUserId] = useState(null);
@@ -10,6 +11,8 @@ export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(false);
   const [responseMessage, setResponseMessage] = useState('');
   const [timer, setTimer] = useState(0);
+  const router = useRouter();
+
 
   useEffect(() => {
     const userData = localStorage.getItem("user_data");
@@ -30,6 +33,7 @@ export default function Dashboard() {
       }`);
       setIsLoading(false);
       setTimer(0);
+      router.push(`/collab-page?user1=${data.partner.user1.userId}&user2=${data.partner.user2.userId}`);
     });
 
     return () => {
