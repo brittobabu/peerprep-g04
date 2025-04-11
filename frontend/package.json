@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@monaco-editor/react": "^4.7.0",
     "axios": "^1.8.1",
     "next": "^15.2.4",
     "nookies": "^2.5.2",
@@ -16,6 +17,9 @@
     "quill-cursors": "^4.0.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "slate": "^0.112.0",
+    "slate-history": "^0.110.3",
+    "slate-react": "^0.112.1",
     "socket.io-client": "^4.8.1",
     "y-quill": "^1.0.0",
     "y-webrtc": "^10.3.0",
