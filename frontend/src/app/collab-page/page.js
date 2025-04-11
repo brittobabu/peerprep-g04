@@ -1,61 +1,62 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-import dynamic from 'next/dynamic'
-
-// Dynamically import Monaco (SSR-safe)
-const MonacoEditor = dynamic(() => import('@monaco-editor/react'), { ssr: false })
+import { useState } from 'react';
+import { useCollaboration } from './collab-socket.js'; 
+import MonacoEditorWrapper from './monocoeditor.js';
 
 export default function CollaborativeMonacoEditor() {
-  const [content, setContent] = useState('// Start typing...')
-  const socketRef = useRef(null)
-  const isUpdating = useRef(false) // Prevent infinite loop on update
+  const [roomId, setRoomId] = useState('');
+  const [isStarted, setIsStarted] = useState(false); // Track if collaboration is started
+  const { content, handleEditorChange, handleLogout } = useCollaboration(roomId, '// Start typing...');
 
-  useEffect(() => {
-    const socket = new WebSocket('ws://localhost:5000')
-    socketRef.current = socket
-
-    socket.onopen = () => console.log('WebSocket connected')
-
-    socket.onmessage = (event) => {
-      try {
-        const message = JSON.parse(event.data)
-        if (message.type === 'init' || message.type === 'update') {
-          isUpdating.current = true
-          setContent(message.data)
-        }
-      } catch (err) {
-        console.error('Error parsing message:', err)
-      }
+  const handleStart = () => {
+    if (roomId) {
+      setIsStarted(true);
+      
     }
-
-    socket.onclose = () => console.log('WebSocket closed')
-    return () => socket.close()
-  }, [])
-
-  const handleEditorChange = (value) => {
-    if (!isUpdating.current && socketRef.current?.readyState === WebSocket.OPEN) {
-      socketRef.current.send(JSON.stringify({ type: 'update', data: value }))
-    }
-    isUpdating.current = false
-    setContent(value || '')
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <h1 className="text-xl font-semibold mb-4">Collaborative Monaco Editor</h1>
-      <div className="bg-white rounded shadow-md">
-        <MonacoEditor
-          height="600px"
-          defaultLanguage="javascript"
-          value={content}
-          onChange={handleEditorChange}
-          options={{
-            automaticLayout: true,
-            minimap: { enabled: false },
-          }}
+
+      <div>
+        <input
+          type="text"
+          placeholder="Enter Room ID"
+          value={roomId}
+          onChange={(e) => setRoomId(e.target.value)}
+          className="mb-4 p-2 border border-gray-400 rounded"
         />
       </div>
+
+      {/* Show "Start" button if Room ID is entered and collaboration hasn't started */}
+      {!isStarted && roomId && (
+        <div>
+          <button
+            onClick={handleStart}
+            className="bg-blue-500 text-white p-2 rounded mt-4"
+          >
+            Start Collaboration
+          </button>
+        </div>
+      )}
+
+      {/* Show Monaco Editor only after clicking "Start" */}
+      {isStarted && (
+        <>
+          <MonacoEditorWrapper content={content} handleEditorChange={handleEditorChange} />
+
+          <div>
+            <button
+              onClick={handleLogout}
+              className="bg-red-500 text-white p-2 rounded mt-4"
+            >
+              Logout from Collaboration
+            </button>
+          </div>
+        </>
+      )}
     </div>
-  )
+  );
 }
