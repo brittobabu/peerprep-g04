@@ -73,6 +73,33 @@ export async function getQuestionMeta(req, res) {
       res.status(500).json({ error: error.message });
     }
   }
+
+  export async function filterQuestions(req, res) {
+    try {
+      const topic = req.query.topic;
+      const complexity = req.query.complexity;
+  
+      if (!topic || !complexity) {
+        return res.status(400).json({ error: "Missing topic or complexity" });
+      }
+  
+      // Find all matching by complexity first
+      const allQuestions = await QuestionModel.find({ complexity });
+  
+      // Then check if the topic exists in the comma-separated category string
+      const matching = allQuestions.filter(q =>
+        q.category
+          .split(',')
+          .map(c => c.trim().toLowerCase())
+          .includes(topic.toLowerCase())
+      );
+  
+      res.json(matching);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
+  
 // export async function editQuestion(req,res){
  
 

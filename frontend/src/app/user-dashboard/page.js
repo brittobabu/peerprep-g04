@@ -43,8 +43,8 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    if (!userId) return;
-
+    if (!userId || !topic || !complexity) return;
+  
     registerSocket(userId, (data) => {
       setResponseMessage(`✅ Match found with user: ${
         data.partner.user1.userId === userId
@@ -53,13 +53,25 @@ export default function Dashboard() {
       }`);
       setIsLoading(false);
       setTimer(0);
-      router.push(`/collab-page?user1=${data.partner.user1.userId}&user2=${data.partner.user2.userId}`);
+  
+      // Capture current topic and complexity safely
+      const chosenTopic = topic && topic !== '' ? topic : (categories[0] || 'Algorithms');
+      const chosenComplexity = complexity && complexity !== '' ? complexity : (complexities[0] || 'Easy');
+  
+      console.log("Redirecting with topic:", chosenTopic);
+      console.log("Redirecting with complexity:", chosenComplexity);
+  
+      router.push(`/collab-page?user1=${data.partner.user1.userId}&user2=${data.partner.user2.userId}&topic=${encodeURIComponent(chosenTopic)}&complexity=${encodeURIComponent(chosenComplexity)}`);
     });
-
+  
     return () => {
       disconnectSocket();
     };
-  }, [userId]);
+  }, [userId, topic, complexity]); // ✅ watch all three
+  
+  useEffect(() => {
+    console.log("🔥 Topic changed to:", topic);
+  }, [topic]);
 
   useEffect(() => {
     let interval;
@@ -132,6 +144,7 @@ export default function Dashboard() {
             >
               {categories.map((cat, idx) => (
                 <option key={idx} value={cat}>{cat}</option>
+                
               ))}
             </select>
           </div>
