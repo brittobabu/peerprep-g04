@@ -1,0 +1,17 @@
+
+FROM node:22-alpine
+
+
+WORKDIR /collab-service
+
+COPY package*.json ./
+
+
+RUN npm install
+
+EXPOSE 8000
+
+COPY . .
+
+CMD [ "npm", "run", "dev" ]
+

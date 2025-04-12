@@ -3,14 +3,18 @@
 import { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
 import { registerSocket, disconnectSocket, sendMatchRequest } from './matching_socket.js';
+import { useRouter } from 'next/navigation';
 
 export default function Dashboard() {
   const [userId, setUserId] = useState(null);
-  const [topic, setTopic] = useState('OOP');
-  const [complexity, setDifficulty] = useState('Easy');
+  const [topic, setTopic] = useState('');
+  const [complexity, setDifficulty] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [responseMessage, setResponseMessage] = useState('');
   const [timer, setTimer] = useState(0);
+  const [categories, setCategories] = useState([]);
+  const [complexities, setComplexities] = useState([]);
+
   const router = useRouter();
 
   useEffect(() => {
@@ -22,8 +26,26 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    if (!userId || !topic || !complexity) return;
+    async function fetchMeta() {
+      try {
+        const res = await fetch("http://localhost:3000/admin/question/meta");
+        const data = await res.json();
+        setCategories(data.categories || []);
+        setComplexities(data.complexities || []);
+        // Set default selected values
+        if (data.categories.length > 0) setTopic(data.categories[0]);
+        if (data.complexities.length > 0) setDifficulty(data.complexities[0]);
+      } catch (err) {
+        console.error("Failed to load question metadata", err);
+      }
+    }
 
+    fetchMeta();
+  }, []);
+
+  useEffect(() => {
+    if (!userId || !topic || !complexity) return;
+  
     registerSocket(userId, (data) => {
       setResponseMessage(`✅ Match found with user: ${
         data.partner.user1.userId === userId
@@ -32,7 +54,7 @@ export default function Dashboard() {
       }`);
       setIsLoading(false);
       setTimer(0);
-
+  
       // Capture current topic and complexity safely
       const chosenTopic = topic && topic !== '' ? topic : (categories[0] || 'Algorithms');
       const chosenComplexity = complexity && complexity !== '' ? complexity : (complexities[0] || 'Easy');
@@ -41,14 +63,13 @@ export default function Dashboard() {
       console.log("Redirecting with complexity:", chosenComplexity);
   
       router.push(`/collab-page?user1=${data.partner.user1.userId}&user2=${data.partner.user2.userId}&topic=${encodeURIComponent(chosenTopic)}&complexity=${encodeURIComponent(chosenComplexity)}`);
-
     });
-
+  
     return () => {
       disconnectSocket();
     };
   }, [userId, topic, complexity]); // ✅ watch all three
-
+  
   useEffect(() => {
     console.log("🔥 Topic changed to:", topic);
   }, [topic]);
@@ -56,27 +77,24 @@ export default function Dashboard() {
   useEffect(() => {
     let interval;
 
-  if (isLoading) {
-    // Start the timer from 30
-    setTimer(30);
+    if (isLoading) {
+      setTimer(30);
+      interval = setInterval(() => {
+        setTimer((prev) => {
+          const next = prev - 1;
+          if (next <= 0) {
+            clearInterval(interval);
+            setIsLoading(false);
+            setResponseMessage('No match found. Please try again later.');
+          }
+          return next;
+        });
+      }, 1000);
+    } else {
+      clearInterval(interval);
+      setTimer(0);
+    }
 
-    interval = setInterval(() => {
-      setTimer((prev) => {
-        const next = prev - 1;
-        if (next <= 0) {
-          clearInterval(interval); // Stop the interval when the timer reaches 0
-          setIsLoading(false);
-          setResponseMessage('No match found. Please try again later.');
-        }
-        return next;
-      });
-    }, 1000);
-
-  } else {
-    clearInterval(interval);
-    setTimer(0);
-  }
-  
     return () => clearInterval(interval);
   }, [isLoading]);
 
@@ -135,16 +153,17 @@ export default function Dashboard() {
           <h2 className="text-2xl font-bold mb-6 text-center">Practice</h2>
 
           <div className="mb-4">
-            <label htmlFor="topic" className="block mb-2">Choose Topic</label>
+            <label className="block mb-2">Choose Topic *</label>
             <select
               id="topic"
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
               className="w-full border border-gray-300 rounded px-3 py-2"
             >
-              <option>OOP</option>
-              <option>DSA</option>
-              <option>System Design</option>
+              {categories.map((cat, idx) => (
+                <option key={idx} value={cat}>{cat}</option>
+                
+              ))}
             </select>
           </div>
 
@@ -156,9 +175,9 @@ export default function Dashboard() {
               onChange={(e) => setDifficulty(e.target.value)}
               className="w-full border border-gray-300 rounded px-3 py-2"
             >
-              <option>Easy</option>
-              <option>Medium</option>
-              <option>Hard</option>
+              {complexities.map((lvl, idx) => (
+                <option key={idx} value={lvl}>{lvl}</option>
+              ))}
             </select>
           </div>
 
