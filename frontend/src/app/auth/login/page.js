@@ -23,7 +23,7 @@ export default function LoginPage() {
 
       //set redirect path
       localStorage.setItem("user_data", JSON.stringify(data));
-      const redirect = router.push("/dashboard");
+      const redirect = router.push("/user-dashboard");
       //set delay
       const delay = new Promise((resolve) => setTimeout(resolve, 1000));
       // Wait for whichever finishes first

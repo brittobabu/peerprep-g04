@@ -3,7 +3,7 @@ import { isValidObjectId } from "mongoose";
 import { addQuestion as _addQuestion, findQuestionByDescription, findQuestionById, findQuestionByTitle, updateQuestion } from "../model/question.js";
 import { findAllQuestions as _findAllQuestions } from "../model/question.js";
 import { deleteQuestionById as _deleteQuestionById } from "../model/question.js";
-
+import QuestionModel from "../model/question-model.js";
 
 export async function addQuestion(req, res) {
     try {
@@ -54,6 +54,52 @@ export async function deteleQuestion(req,res){
     }
 }
 
+
+export async function getQuestionMeta(req, res) {
+    try {
+      const rawCategories = await QuestionModel.distinct("category");
+      const complexities = await QuestionModel.distinct("complexity");
+  
+      // Flatten and deduplicate category strings
+      const categorySet = new Set();
+      rawCategories.forEach(cat => {
+        cat.split(',').forEach(c => categorySet.add(c.trim()));
+      });
+  
+      const categories = Array.from(categorySet);
+  
+      res.json({ categories, complexities });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+
+  export async function filterQuestions(req, res) {
+    try {
+      const topic = req.query.topic;
+      const complexity = req.query.complexity;
+  
+      if (!topic || !complexity) {
+        return res.status(400).json({ error: "Missing topic or complexity" });
+      }
+  
+      // Find all matching by complexity first
+      const allQuestions = await QuestionModel.find({ complexity });
+  
+      // Then check if the topic exists in the comma-separated category string
+      const matching = allQuestions.filter(q =>
+        q.category
+          .split(',')
+          .map(c => c.trim().toLowerCase())
+          .includes(topic.toLowerCase())
+      );
+  
+      res.json(matching);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
+  
 // export async function editQuestion(req,res){
  
 
@@ -96,4 +142,8 @@ export function formatQuestionResponse(question) {
       category: question.category,
       complexity: question.complexity,
     };
+
+
+
+
   }
