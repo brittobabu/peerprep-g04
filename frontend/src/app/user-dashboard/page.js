@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
 import { registerSocket, disconnectSocket, sendMatchRequest } from './matching_socket.js';
-import { useRouter } from 'next/navigation';
 
 export default function Dashboard() {
   const [userId, setUserId] = useState(null);
@@ -205,11 +204,17 @@ export default function Dashboard() {
           <h2 className="text-2xl font-bold mb-6 text-center">Past sessions</h2>
 
           <div className="mb-4">
-            <label className="block mb-2">Choose Topic</label>
-            <select className="w-full border border-gray-300 rounded px-3 py-2">
-              <option>DSA</option>
-              <option>OOP</option>
-              <option>System Design</option>
+            <label className="block mb-2">Choose Topic *</label>
+            <select
+              id="topic"
+              value={topic}
+              onChange={(e) => setTopic(e.target.value)}
+              className="w-full border border-gray-300 rounded px-3 py-2"
+            >
+              {categories.map((cat, idx) => (
+                <option key={idx} value={cat}>{cat}</option>
+                
+              ))}
             </select>
           </div>
 
