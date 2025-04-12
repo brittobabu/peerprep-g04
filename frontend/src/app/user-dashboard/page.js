@@ -89,7 +89,7 @@ export default function Dashboard() {
     localStorage.removeItem("user_data");
     disconnectSocket();
     setUserId(null);
-    router.push('/login'); // Redirect to login page
+    router.push('/'); // Redirect to login page
   };
 
   return (
@@ -152,13 +152,14 @@ export default function Dashboard() {
             <button
               onClick={handleSubmit}
               disabled={isLoading}
-              className="bg-[#f48c42] text-white px-4 py-2 rounded-full flex items-center gap-2 hover:bg-[#e67e22]"
+              className="w-full bg-[#f48c42] text-white px-4 py-2 rounded-full hover:bg-[#e67e22]"
             >
              {isLoading ? `Searching... (${timer}s)` : 'Start'}
             </button>
-            <button className="bg-[#da00e7] text-white text-sm px-3 py-1 rounded-full hover:opacity-90">
+            {/* <button className="bg-[#da00e7] text-white text-sm px-3 py-1 rounded-full hover:opacity-90">
               View Library
-            </button>
+            </button> */}
+            {/* user should not prepare for the questions before hand. */}
           </div>
 
           {responseMessage && (
