@@ -13,7 +13,7 @@ export default function Dashboard() {
   const [timer, setTimer] = useState(0);
   const [categories, setCategories] = useState([]);
   const [complexities, setComplexities] = useState([]);
-
+  
   const router = useRouter();
 
   useEffect(() => {
@@ -68,7 +68,7 @@ export default function Dashboard() {
       disconnectSocket();
     };
   }, [userId, topic, complexity]); // ✅ watch all three
-  
+
   useEffect(() => {
     console.log("🔥 Topic changed to:", topic);
   }, [topic]);
@@ -125,9 +125,16 @@ export default function Dashboard() {
         </div>
         <div className="flex items-center gap-3">
           <p>{userId ?? 'Your name'}</p>
-          <button className="ml-4 px-4 py-1 bg-[#e67e22] text-white rounded-lg shadow hover:bg-[#cf711c]">
-            Logout
-          </button>
+          <button
+           onClick={() => {
+               localStorage.removeItem("user_data"); // Clear any session storage
+               disconnectSocket(); //clean up socket connection
+                router.push("/"); // Redirect to landing/login page
+          }}
+           className="ml-4 px-4 py-1 bg-[#e67e22] text-white rounded-lg shadow hover:bg-[#cf711c]"
+          >
+           Logout
+      </button>
         </div>
       </div>
 
