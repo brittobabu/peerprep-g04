@@ -42,7 +42,7 @@ export default function QuestionsList() {
 
   const handleDelete = async (id) => {
     try {
-      const deleteQuestion = await axios.delete(`http://localhost:3001/admin/question/${id}`);
+      const deleteQuestion = await axios.delete(`http://localhost:3000/admin/question/${id}`);
       if (deleteQuestion.status === 201) {
         fetchQuestions();
       }
@@ -59,7 +59,7 @@ export default function QuestionsList() {
   const handleSave = async (id) => {
     try {
       console.log("Saving question:", id, editedData);
-      const response = await axios.put(`http://localhost:3001/admin/question/${id}`, editedData);
+      const response = await axios.put(`http://localhost:3000/admin/question/${id}`, editedData);
       console.log("Response from server:", response.data);
       
       if (response.status === 200) {
