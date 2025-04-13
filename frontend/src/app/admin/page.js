@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useRouter } from 'next/navigation';
 
 export default function QuestionsList() {
   const [questions, setQuestions] = useState([]);
@@ -12,6 +13,8 @@ export default function QuestionsList() {
   const [filterComplexity, setFilterComplexity] = useState("");
   const [filterCategory, setFilterCategory] = useState("");
   const [categories, setCategories] = useState([]);
+  const router = useRouter();
+  
 
   useEffect(() => {
     fetchQuestions();
@@ -77,10 +80,18 @@ export default function QuestionsList() {
 
   return (
     <div className="max-w-6xl mx-auto p-6">
-      <h1 className="text-2xl font-bold text-center mb-6">All Questions</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">All Questions</h1>
+        <button
+          onClick={() => router.push('/dashboard')}
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        >
+          ⬅ Back to Dashboard
+        </button>
+      </div>
+
       <div className="flex justify-between mb-4">
         <div>
-          {/* <label className="block text-white mb-1">Filter by Complexity</label> */}
           <select value={filterComplexity} onChange={(e) => setFilterComplexity(e.target.value === 'all' ? '' : e.target.value)} className="p-2 border rounded bg-gray-800 text-white">
             <option value="" disabled>Filter by Complexity</option>
             <option value="all">Show All</option>
@@ -90,7 +101,6 @@ export default function QuestionsList() {
           </select>
         </div>
         <div>
-          {/* <label className="block text-white mb-1">Filter by Category</label> */}
           <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value === 'all' ? '' : e.target.value)} className="p-2 border rounded bg-gray-800 text-white">
             <option value="" disabled>Filter by Category</option>
             <option value="all">Show All</option>
@@ -100,6 +110,7 @@ export default function QuestionsList() {
           </select>
         </div>
       </div>
+
       <div className="overflow-x-auto">
         <table className="min-w-full border-collapse border border-gray-200 shadow-md">
           <thead className="bg-gray-800 text-white">
@@ -119,11 +130,11 @@ export default function QuestionsList() {
                 {editingQuestion === question.id ? (
                   <>
                     <td className="border p-3">{index + 1}</td>
-                    <td className="border p-3"><input type="text" value={editedData.title} onChange={(e) => setEditedData({...editedData, title: e.target.value})} className="w-full p-1 border rounded" /></td>
-                    <td className="border p-3"><textarea value={editedData.description} onChange={(e) => setEditedData({...editedData, description: e.target.value})} className="w-full p-1 border rounded"></textarea></td>
-                    <td className="border p-3"><input type="text" value={editedData.category} onChange={(e) => setEditedData({...editedData, category: e.target.value})} className="w-full p-1 border rounded" /></td>
+                    <td className="border p-3"><input type="text" value={editedData.title} onChange={(e) => setEditedData({ ...editedData, title: e.target.value })} className="w-full p-1 border rounded" /></td>
+                    <td className="border p-3"><textarea value={editedData.description} onChange={(e) => setEditedData({ ...editedData, description: e.target.value })} className="w-full p-1 border rounded" /></td>
+                    <td className="border p-3"><input type="text" value={editedData.category} onChange={(e) => setEditedData({ ...editedData, category: e.target.value })} className="w-full p-1 border rounded" /></td>
                     <td className="border p-3">
-                      <select value={editedData.complexity} onChange={(e) => setEditedData({...editedData, complexity: e.target.value})} className="w-full p-1 border rounded">
+                      <select value={editedData.complexity} onChange={(e) => setEditedData({ ...editedData, complexity: e.target.value })} className="w-full p-1 border rounded">
                         <option value="Easy">Easy</option>
                         <option value="Medium">Medium</option>
                         <option value="Hard">Hard</option>
@@ -150,6 +161,8 @@ export default function QuestionsList() {
           </tbody>
         </table>
       </div>
+
+      {message && <p className="text-red-500 mt-4">{message}</p>}
     </div>
   );
 }

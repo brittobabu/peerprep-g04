@@ -13,7 +13,7 @@ export default function Dashboard() {
   const [timer, setTimer] = useState(0);
   const [categories, setCategories] = useState([]);
   const [complexities, setComplexities] = useState([]);
-
+  
   const router = useRouter();
 
   useEffect(() => {
@@ -68,7 +68,7 @@ export default function Dashboard() {
       disconnectSocket();
     };
   }, [userId, topic, complexity]); // ✅ watch all three
-  
+
   useEffect(() => {
     console.log("🔥 Topic changed to:", topic);
   }, [topic]);
@@ -131,17 +131,18 @@ export default function Dashboard() {
           <h1 className="text-4xl font-bold text-[#1e1e1e]">PEERPREP</h1>
           <p className="text-sm text-gray-700">Practice coding interviews live with peers!</p>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="bg-white p-2 rounded-full shadow">
-            <span role="img" aria-label="user">👤</span>
-          </div>
-          <p className="font-medium">{userId ?? 'Your name'}</p>
+        <div className="flex items-center gap-3">
+          <p>{userId ?? 'Your name'}</p>
           <button
-            onClick={handleLogout}
-            className="px-4 py-1 bg-[#f48c42] text-white rounded-full shadow hover:bg-[#e67e22]"
+           onClick={() => {
+               localStorage.removeItem("user_data"); // Clear any session storage
+               disconnectSocket(); //clean up socket connection
+                router.push("/"); // Redirect to landing/login page
+          }}
+           className="ml-4 px-4 py-1 bg-[#e67e22] text-white rounded-lg shadow hover:bg-[#cf711c]"
           >
-            Logout
-          </button>
+           Logout
+      </button>
         </div>
       </div>
 
