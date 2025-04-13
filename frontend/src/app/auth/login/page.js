@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect  } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import Link from "next/link";
@@ -12,6 +12,20 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState("Loading...");
   const router = useRouter();
+
+  useEffect(() => {
+    const seedAdmin = async () => {
+      try {
+        const response = await axios.post("http://localhost:3000/api/auth/seed");
+        console.log("Seed response:", response.data.message);
+      } catch (error) {
+        console.log(error);
+        console.log("Seeding failed Error:", error.response?.data?.message || error.message);
+      }
+    };
+
+    seedAdmin();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
