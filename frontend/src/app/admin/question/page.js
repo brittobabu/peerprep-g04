@@ -40,10 +40,10 @@ const AddQuestionPage = () => {
         setCategory('');
         setComplexity('Easy');
       } else {
-        setMessage('❌ Failed to add question.');
+        setMessage(response.data.message || '❌ Failed to add question.');
       }
     } catch (error) {
-      setMessage('❌ Error: ' + error.message);
+      setMessage(error.response?.data?.message || '❌ Failed to add questions!');
     }
   };
 

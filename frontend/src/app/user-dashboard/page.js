@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
-import { registerSocket, disconnectSocket, sendMatchRequest } from './matching_socket.js';
+import { registerSocket, disconnectSocket, sendMatchRequest, onlineCountSocket } from './matching_socket.js';
 
 export default function Dashboard() {
   const [userId, setUserId] = useState(null);
@@ -15,6 +15,7 @@ export default function Dashboard() {
   const [categories, setCategories] = useState([]);
   const [complexities, setComplexities] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [onlineCount, setOnlineCount] = useState(0);
 
   const [historyRange, setHistoryRange] = useState("all");
   
@@ -33,6 +34,7 @@ export default function Dashboard() {
       router.replace("/"); // not logged in
     }
   }, []);
+  
 
   useEffect(() => {
     async function fetchMeta() {
@@ -59,6 +61,8 @@ export default function Dashboard() {
     if (!userId || !topic || !complexity) return;
   
     registerSocket(userId, (data) => {
+      console.log(`userID ${userId}`);
+      console.log(data);
       setResponseMessage(`✅ Match found with user: ${
         data.partner.user1.userId === userId
           ? data.partner.user2.userId
@@ -84,6 +88,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     console.log("🔥 Topic changed to:", topic);
+
   }, [topic]);
 
   useEffect(() => {
@@ -109,6 +114,7 @@ export default function Dashboard() {
 
     return () => clearInterval(interval);
   }, [isLoading]);
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -130,6 +136,11 @@ export default function Dashboard() {
   };
 
 
+  useEffect(() => {
+    onlineCountSocket(setOnlineCount);
+  });
+
+
   return (
     <div className="min-h-screen bg-[#f5f5f5] font-sans">
       {/* Header */}
@@ -142,7 +153,7 @@ export default function Dashboard() {
           <div className="bg-white p-2 rounded-full shadow">
             <span role="img" aria-label="user">👤</span>
           </div>
-          <p className="font-medium">{userId ?? 'Your name'}</p>
+          <p className="font-medium">{userId ?? 'Your name'} <span className="text-xs text-gray-500 ml-2">🟢 {onlineCount} online</span></p>
           <button
            onClick={() => {
                localStorage.removeItem("user_data"); // Clear any session storage

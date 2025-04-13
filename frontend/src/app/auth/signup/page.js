@@ -23,26 +23,23 @@ export default function SignupPage() {
       return;
     }
     setLoading(true);
-    try {
-      await axios.post("http://localhost:3000/api/auth/signup", { username, email, password, confirmPassword });
+    try {     
       
       // sent otp to email
-
       const response = await axios.post("http://localhost:3000/api/auth/sendOTP", {email });
-
 
       if(!response.data?.success){
         alert("Failed to send OTP");
         setLoading(false);
         return;
-      }
+      }      
 
       setSuccess(true);
       await new Promise((resolve) => setTimeout(resolve, 2000));      
 
       //set redirect path
       const redirect = router.push(
-        `/auth/signup/verify-account?email=${encodeURIComponent(email)}`
+        `/auth/signup/verify-account?email=${encodeURIComponent(email)}&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&confirmPassword=${encodeURIComponent(confirmPassword)}`
       );
       //set delay
       const delay = new Promise((resolve) => setTimeout(resolve, 1000));
