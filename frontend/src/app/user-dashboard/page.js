@@ -26,6 +26,8 @@ export default function Dashboard() {
       if (parsed.data.isAdmin) {
         setIsAdmin(true);
       }
+    } else {
+      router.replace("/"); // not logged in
     }
   }, []);
 
