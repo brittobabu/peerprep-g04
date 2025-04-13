@@ -22,7 +22,6 @@ export default function LoginPage() {
         const questionRes = await axios.post("http://localhost:3000/admin/question/seed");
         console.log("Question seed response:", questionRes.data.message);
       } catch (error) {
-        console.log(error);
         console.log("Seeding failed Error:", error.response?.data?.message || error.message);
       }
     };
@@ -37,10 +36,18 @@ export default function LoginPage() {
     try {
 
       const { data } = await axios.post("http://localhost:3000/api/auth/login", { username, password });
-
+      
       //set redirect path
       localStorage.setItem("user_data", JSON.stringify(data));
-      const redirect = router.push("/user-dashboard");
+
+      console.log(data.data);
+      var redirect;
+      if(data.data.isAdmin){
+        redirect = router.push("/dashboard");
+      }else{
+        redirect = router.push("/user-dashboard");
+      }
+      
       //set delay
       const delay = new Promise((resolve) => setTimeout(resolve, 1000));
       // Wait for whichever finishes first

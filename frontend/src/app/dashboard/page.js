@@ -1,8 +1,27 @@
 'use client';
 
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function AdminDashboard() {
+
+  const [userId, setUserId] = useState(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    const userData = localStorage.getItem("user_data");
+    if (userData) {
+      const parsed = JSON.parse(userData);
+      setUserId(parsed.data.username);
+      if (!parsed.data?.isAdmin) {
+        router.replace("/user-dashboard"); // redirect non-admin
+      }
+    } else {
+      router.replace("/"); // not logged in
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#f5f5f5]">
       {/* Header */}
@@ -10,6 +29,22 @@ export default function AdminDashboard() {
         <div>
           <h1 className="text-4xl font-bold text-[#1e1e1e]">PEERPREP Admin</h1>
           <p className="text-sm">Manage coding questions and categories</p>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <div className="bg-white p-2 rounded-full shadow">
+            <span role="img" aria-label="user">👤</span>
+          </div>
+          <p className="font-medium">{userId ?? 'Your name'}</p>
+          <button
+            onClick={() => {
+                localStorage.removeItem("user_data"); // Clear any session storage
+                router.push("/"); // Redirect to landing/login page
+          }}
+            className="ml-4 px-4 py-1 bg-[#e67e22] text-white rounded-lg shadow hover:bg-[#cf711c]"
+          >
+            Logout
+          </button>
         </div>
       </div>
 

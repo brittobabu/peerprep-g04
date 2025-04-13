@@ -13,6 +13,7 @@ export default function Dashboard() {
   const [timer, setTimer] = useState(0);
   const [categories, setCategories] = useState([]);
   const [complexities, setComplexities] = useState([]);
+  const [isAdmin, setIsAdmin] = useState(false);
   
   const router = useRouter();
 
@@ -21,6 +22,10 @@ export default function Dashboard() {
     if (userData) {
       const parsed = JSON.parse(userData);
       setUserId(parsed.data.username);
+
+      if (parsed.data.isAdmin) {
+        setIsAdmin(true);
+      }
     }
   }, []);
 
@@ -131,8 +136,11 @@ export default function Dashboard() {
           <h1 className="text-4xl font-bold text-[#1e1e1e]">PEERPREP</h1>
           <p className="text-sm text-gray-700">Practice coding interviews live with peers!</p>
         </div>
-        <div className="flex items-center gap-3">
-          <p>{userId ?? 'Your name'}</p>
+        <div className="flex items-center gap-4">
+          <div className="bg-white p-2 rounded-full shadow">
+            <span role="img" aria-label="user">👤</span>
+          </div>
+          <p className="font-medium">{userId ?? 'Your name'}</p>
           <button
            onClick={() => {
                localStorage.removeItem("user_data"); // Clear any session storage
@@ -142,12 +150,23 @@ export default function Dashboard() {
            className="ml-4 px-4 py-1 bg-[#e67e22] text-white rounded-lg shadow hover:bg-[#cf711c]"
           >
            Logout
-      </button>
+          </button>
         </div>
       </div>
 
-      {/* Main Sections */}
+      {/* Main Sections */}      
       <div className="flex justify-center items-start gap-12 mt-16 flex-wrap">
+        {/* Back to admin dashboard for admin user only */}
+        {isAdmin && (
+          <div className="absolute top-8 mt-20 left-4">
+            <button
+              onClick={() => router.push("/dashboard")}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow"
+            >
+              ⬅ Back to Admin Dashboard
+            </button>
+          </div>
+        )}
         {/* Practice Card */}
         <div className="bg-[#fff3e6] border rounded-xl p-6 w-80 shadow-md">
           <h2 className="text-2xl font-bold mb-6 text-center">Practice</h2>
