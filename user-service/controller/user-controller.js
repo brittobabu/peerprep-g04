@@ -223,6 +223,34 @@ export async function deleteUser(req, res) {
   }
 }
 
+
+export async function seedDefaultUser(req, res) {
+  try {
+    const username = "admin";
+    const email = "admin@gmail.com";
+    const password = "admin";
+    const isAdmin = true;
+
+    const existingUser = await _findUserByUsernameOrEmail(username, email);
+    if (existingUser) {
+      console.log('user exist');
+      return res.status(200).json({ message: "User already exists" });
+    }
+
+    const salt = bcrypt.genSaltSync(10);
+    const hashedPassword = bcrypt.hashSync(password, salt);
+    const createdUser = await _createUser(username, email, hashedPassword, isAdmin);
+
+    return res.status(201).json({
+      message: "Seeded default admin user",
+      data: formatUserResponse(createdUser),
+    });
+  } catch (err) {
+    console.log("Seeding failed:", err);
+    return res.status(500).json({ message: "Seeding error", detail: err.message });
+  }
+}
+
 export function formatUserResponse(user) {
   return {
     id: user.id,
