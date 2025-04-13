@@ -18,6 +18,9 @@ export default function LoginPage() {
       try {
         const response = await axios.post("http://localhost:3000/api/auth/seed");
         console.log("Seed response:", response.data.message);
+
+        const questionRes = await axios.post("http://localhost:3000/admin/question/seed");
+        console.log("Question seed response:", questionRes.data.message);
       } catch (error) {
         console.log(error);
         console.log("Seeding failed Error:", error.response?.data?.message || error.message);
