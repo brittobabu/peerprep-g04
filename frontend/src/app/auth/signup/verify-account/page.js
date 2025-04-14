@@ -11,6 +11,9 @@ export default function VerifyAccount() {
   const searchParams = useSearchParams(); 
 
   const email = searchParams.get("email");
+  const username = searchParams.get("username");
+  const password = searchParams.get("password");
+  const confirmPassword = searchParams.get("confirmPassword");
 
   const [verificationCode, setVerificationCode] = useState("");
   const [loading, setLoading] = useState(false);
@@ -25,9 +28,10 @@ export default function VerifyAccount() {
         verificationCode,
       });
 
+      await axios.post("http://localhost:3000/api/auth/signup", { username, email, password, confirmPassword });
 
       //set redirect path
-      const redirect = router.push("/admin");
+      const redirect = router.push("/");
       //set delay
       const delay = new Promise((resolve) => setTimeout(resolve, 1000));
       // Wait for whichever finishes first

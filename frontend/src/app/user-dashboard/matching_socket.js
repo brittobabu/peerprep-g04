@@ -12,6 +12,15 @@ export const registerSocket = (userId, onMatchFound) => {
   socket.on('matchFound', onMatchFound);
 };
 
+
+export const onlineCountSocket = (setCount) => {
+  if (!socket) return;
+  socket.on("onlineCount", (countValue) => {
+    console.log("Online users:", countValue);
+    setCount(countValue);
+  });
+};
+
 export const disconnectSocket = () => {
   if (socket) socket.disconnect();
 };

@@ -17,11 +17,11 @@ export async function findQuestionByTitle(title) {
 }
 
 export async function findQuestionByCategory(category) {
-    return QuestionModel.find({ description });
+    return QuestionModel.find({ category });
 }
 
 export async function findQuestionByComplexity(complexity) {
-    return QuestionModel.find({ description });
+    return QuestionModel.find({ complexity });
 }
 
 export async function findQuestionById(id) {

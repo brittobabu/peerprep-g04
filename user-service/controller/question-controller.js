@@ -1,6 +1,6 @@
 
 import { isValidObjectId } from "mongoose";
-import { addQuestion as _addQuestion, findQuestionByDescription, findQuestionById, findQuestionByTitle, updateQuestion } from "../model/question.js";
+import { addQuestion as _addQuestion, findQuestionByDescription, findQuestionById, findQuestionByTitle, updateQuestion, findQuestionByCategory } from "../model/question.js";
 import { findAllQuestions as _findAllQuestions } from "../model/question.js";
 import { deleteQuestionById as _deleteQuestionById } from "../model/question.js";
 import QuestionModel from "../model/question-model.js";
@@ -10,13 +10,13 @@ export async function addQuestion(req, res) {
         const { title, description, category, complexity } = req.body.questionData;
 
         if (!(title && description && category && complexity)) {
-            res.status(500).json({ message: 'Missing input fields.' });
+            return res.status(500).json({ message: 'Missing input fields.' });
         }
         const existingQuestion1 = await findQuestionByTitle(title)
-        const existingQuestion2 = await findQuestionByDescription(description)
+        const existingQuestion2 = await findQuestionByCategory(category)
 
-        if(existingQuestion1 || existingQuestion2){
-            res.status(500).json({ message: 'Question already exist.' });
+        if(existingQuestion1 && existingQuestion2){
+          return res.status(500).json({ message: 'Question already exist.' });
         }
 
         const newQuestion =  await _addQuestion(title, description, category, complexity)
@@ -24,7 +24,7 @@ export async function addQuestion(req, res) {
 
         res.status(201).json({ message: 'Question added successfully!',data : newQuestion });
     } catch (error) {
-        console.log(error)
+        console.log(error);
         res.status(500).json({ message: 'Failed to add question.' });
     }
 }
@@ -33,10 +33,10 @@ export async function addQuestion(req, res) {
 export async function findAllQuestions(req,res){
     try {
         const questions = await _findAllQuestions();
-        return res.status(200).json({ message: `Found Questions`, data: questions.map(formatQuestionResponse) });
+        res.status(200).json({ message: `Found Questions`, data: questions.map(formatQuestionResponse) });
       } catch (err) {
         console.error(err);
-        return res.status(500).json({ message: "Unknown error when getting all questions!" });
+        res.status(500).json({ message: "Unknown error when getting all questions!" });
       }
 } 
 
@@ -47,10 +47,11 @@ export async function deteleQuestion(req,res){
         
         await _deleteQuestionById(id)
         
-        return res.status(201).json({message: `Question delete successfull id : ${id}`})
+        res.status(201).json({message: `Question delete successfull id : ${id}`})
 
     }catch(err){
         console.log(err)
+        res.status(500).json({ message: "Failed to delete question!" });
     }
 }
 
@@ -124,7 +125,7 @@ export async function editQuestion(req, res) {
         if (!(title && description && category && complexity)) {
             return res.status(400).json({ message: "All fields are required" });
         }
-
+        
         const updatedQuestion = await updateQuestion(id, title, description, category, complexity);
         res.status(200).json({ message: "Question updated successfully", data: formatQuestionResponse(updatedQuestion) });
 
@@ -246,8 +247,9 @@ export async function seedQuestions(req, res) {
     const inserted = [];
 
     for (const q of defaultQuestions) {
-      const exists = await QuestionModel.findOne({ title: q.title });
-      if (!exists) {
+      const exists = await QuestionModel.findOne({ title: q.title, category: q.category });
+
+      if(!exists){
         const newQ = new QuestionModel(q);
         await newQ.save();
         inserted.push(newQ);

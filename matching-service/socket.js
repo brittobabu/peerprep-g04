@@ -10,6 +10,9 @@ function initSocket(serverIO) {
     socket.on('register', (userId) => {
       socketMap[userId] = socket.id;
       console.log(`Registered user ${userId} with socket ${socket.id}`);
+      console.log(`Online user`, Object.keys(socketMap).length);
+
+      io.emit('onlineCount', Object.keys(socketMap).length);
     });
 
     socket.on('disconnect', () => {
@@ -17,8 +20,11 @@ function initSocket(serverIO) {
         if (sockId === socket.id) {
           delete socketMap[userId];
           console.log(`Disconnected user ${userId}`);
+          break;
         }
       }
+
+      io.emit('onlineCount', Object.keys(socketMap).length);
     });
   });
 }
