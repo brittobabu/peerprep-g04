@@ -2,18 +2,23 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
-import { registerSocket, disconnectSocket, sendMatchRequest } from './matching_socket.js';
+import { registerSocket, disconnectSocket, sendMatchRequest, onlineCountSocket } from './matching_socket.js';
 
 export default function Dashboard() {
   const [userId, setUserId] = useState(null);
   const [topic, setTopic] = useState('');
+  const [historyTopic, setHistoryTopic] = useState('');
   const [complexity, setDifficulty] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [responseMessage, setResponseMessage] = useState('');
   const [timer, setTimer] = useState(0);
   const [categories, setCategories] = useState([]);
   const [complexities, setComplexities] = useState([]);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [onlineCount, setOnlineCount] = useState(0);
 
+  const [historyRange, setHistoryRange] = useState("all");
+  
   const router = useRouter();
 
   useEffect(() => {
@@ -21,8 +26,15 @@ export default function Dashboard() {
     if (userData) {
       const parsed = JSON.parse(userData);
       setUserId(parsed.data.username);
+
+      if (parsed.data.isAdmin) {
+        setIsAdmin(true);
+      }
+    } else {
+      router.replace("/"); // not logged in
     }
   }, []);
+  
 
   useEffect(() => {
     async function fetchMeta() {
@@ -32,7 +44,10 @@ export default function Dashboard() {
         setCategories(data.categories || []);
         setComplexities(data.complexities || []);
         // Set default selected values
-        if (data.categories.length > 0) setTopic(data.categories[0]);
+        if (data.categories.length > 0) {
+          setTopic(data.categories[0]);          // for matching
+          setHistoryTopic(data.categories[0]);   // for filtering history
+        }
         if (data.complexities.length > 0) setDifficulty(data.complexities[0]);
       } catch (err) {
         console.error("Failed to load question metadata", err);
@@ -46,6 +61,8 @@ export default function Dashboard() {
     if (!userId || !topic || !complexity) return;
   
     registerSocket(userId, (data) => {
+      console.log(`userID ${userId}`);
+      console.log(data);
       setResponseMessage(`✅ Match found with user: ${
         data.partner.user1.userId === userId
           ? data.partner.user2.userId
@@ -68,9 +85,10 @@ export default function Dashboard() {
       disconnectSocket();
     };
   }, [userId, topic, complexity]); // ✅ watch all three
-  
+
   useEffect(() => {
     console.log("🔥 Topic changed to:", topic);
+
   }, [topic]);
 
   useEffect(() => {
@@ -96,6 +114,7 @@ export default function Dashboard() {
 
     return () => clearInterval(interval);
   }, [isLoading]);
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -116,12 +135,11 @@ export default function Dashboard() {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("user_data");
-    disconnectSocket();
-    setUserId(null);
-    router.push('/'); // Redirect to login page
-  };
+
+  useEffect(() => {
+    onlineCountSocket(setOnlineCount);
+  });
+
 
   return (
     <div className="min-h-screen bg-[#f5f5f5] font-sans">
@@ -135,18 +153,33 @@ export default function Dashboard() {
           <div className="bg-white p-2 rounded-full shadow">
             <span role="img" aria-label="user">👤</span>
           </div>
-          <p className="font-medium">{userId ?? 'Your name'}</p>
+          <p className="font-medium">{userId ?? 'Your name'} <span className="text-xs text-gray-500 ml-2">🟢 {onlineCount} online</span></p>
           <button
-            onClick={handleLogout}
-            className="px-4 py-1 bg-[#f48c42] text-white rounded-full shadow hover:bg-[#e67e22]"
+           onClick={() => {
+               localStorage.removeItem("user_data"); // Clear any session storage
+               disconnectSocket(); //clean up socket connection
+                router.push("/"); // Redirect to landing/login page
+          }}
+           className="ml-4 px-4 py-1 bg-[#e67e22] text-white rounded-lg shadow hover:bg-[#cf711c]"
           >
-            Logout
+           Logout
           </button>
         </div>
       </div>
 
-      {/* Main Sections */}
+      {/* Main Sections */}      
       <div className="flex justify-center items-start gap-12 mt-16 flex-wrap">
+        {/* Back to admin dashboard for admin user only */}
+        {isAdmin && (
+          <div className="absolute top-8 mt-20 left-4">
+            <button
+              onClick={() => router.push("/dashboard")}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow"
+            >
+              ⬅ Back to Admin Dashboard
+            </button>
+          </div>
+        )}
         {/* Practice Card */}
         <div className="bg-[#fff3e6] border rounded-xl p-6 w-80 shadow-md">
           <h2 className="text-2xl font-bold mb-6 text-center">Practice</h2>
@@ -186,12 +219,8 @@ export default function Dashboard() {
               disabled={isLoading}
               className="w-full bg-[#f48c42] text-white px-4 py-2 rounded-full hover:bg-[#e67e22]"
             >
-             {isLoading ? `Searching... (${timer}s)` : 'Start'}
+             {isLoading ? ` ⏳ Searching... (${timer}s)` : ' 🚀 Start'}
             </button>
-            {/* <button className="bg-[#da00e7] text-white text-sm px-3 py-1 rounded-full hover:opacity-90">
-              View Library
-            </button> */}
-            {/* user should not prepare for the questions before hand. */}
           </div>
 
           {responseMessage && (
@@ -206,9 +235,9 @@ export default function Dashboard() {
           <div className="mb-4">
             <label className="block mb-2">Choose Topic *</label>
             <select
-              id="topic"
-              value={topic}
-              onChange={(e) => setTopic(e.target.value)}
+              id="history-topic"
+              value={historyTopic}
+              onChange={(e) => setHistoryTopic(e.target.value)}
               className="w-full border border-gray-300 rounded px-3 py-2"
             >
               {categories.map((cat, idx) => (
@@ -220,15 +249,27 @@ export default function Dashboard() {
 
           <div className="mb-6">
             <label className="block mb-2">Select Time Range</label>
-            <select className="w-full border border-gray-300 rounded px-3 py-2">
-              <option>Last Week</option>
-              <option>Last Month</option>
-              <option>All Time</option>
+            <select className="w-full border border-gray-300 rounded px-3 py-2"
+              value={historyRange}
+              onChange={(e) => setHistoryRange(e.target.value)}
+            >
+              <option value="all">All Time</option>
+              <option value="last_week">Last Week</option>
+              <option value="last_month">Last Month</option>
             </select>
           </div>
 
-          <button className="w-full bg-[#f48c42] text-white px-4 py-2 rounded-full hover:bg-[#e67e22]">
-            View
+          <button
+           onClick={() => {
+            const query = new URLSearchParams({
+              user: userId,
+              topic: historyTopic,
+              range: historyRange
+            }).toString();
+            router.push(`/user-dashboard/match-history?${query}`);
+          }}
+           className="w-full bg-[#f48c42] text-white px-4 py-2 rounded-full hover:bg-[#e67e22]">
+            📜 View Match History
           </button>
         </div>
       </div>

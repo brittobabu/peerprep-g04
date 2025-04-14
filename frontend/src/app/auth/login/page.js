@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect  } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import Link from "next/link";
@@ -13,6 +13,22 @@ export default function LoginPage() {
   const [loadingText, setLoadingText] = useState("Loading...");
   const router = useRouter();
 
+  useEffect(() => {
+    const seedAdmin = async () => {
+      try {
+        const response = await axios.post("http://localhost:3000/api/auth/seed");
+        console.log("Seed response:", response.data.message);
+
+        const questionRes = await axios.post("http://localhost:3000/admin/question/seed");
+        console.log("Question seed response:", questionRes.data.message);
+      } catch (error) {
+        console.log("Seeding failed Error:", error.response?.data?.message || error.message);
+      }
+    };
+
+    seedAdmin();
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -20,10 +36,18 @@ export default function LoginPage() {
     try {
 
       const { data } = await axios.post("http://localhost:3000/api/auth/login", { username, password });
-
+      
       //set redirect path
       localStorage.setItem("user_data", JSON.stringify(data));
-      const redirect = router.push("/user-dashboard");
+
+      console.log(data.data);
+      var redirect;
+      if(data.data.isAdmin){
+        redirect = router.push("/dashboard");
+      }else{
+        redirect = router.push("/user-dashboard");
+      }
+      
       //set delay
       const delay = new Promise((resolve) => setTimeout(resolve, 1000));
       // Wait for whichever finishes first

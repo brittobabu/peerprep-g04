@@ -1,5 +1,6 @@
 const express = require('express');
 const { sendToQueue } = require('../producer/producer.js');
+const { getFilteredMatchHistory } = require('../controllers/match-controller');
 const router = express.Router();
 
 router.post('/match', async (req, res) => {
@@ -10,6 +11,10 @@ router.post('/match', async (req, res) => {
   await sendToQueue({ userId, topic, complexity });
   res.json({ message: 'Searchings for match...' });
 });
+
+
+router.get('/match-history/:username', getFilteredMatchHistory);
+
 
 module.exports = router;
 
